@@ -1,0 +1,30 @@
+.register .row > div{
+    display: inline-block;
+    width: 66%;
+    padding-right: 3rem;
+}
+
+.register form{
+    width: 34%;
+}
+
+#registration-form input,
+#registration-form button{
+    display: block;
+    width: 100%;
+}
+
+@media(max-width: 479px){
+    .register .row{
+        flex-direction: column;
+    }
+    
+    .register .row > div{
+        width: 100%;
+        padding-right: 0;
+    }
+
+    .register form{
+        width: 100%;
+    }
+}

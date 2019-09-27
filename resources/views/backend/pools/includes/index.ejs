@@ -1,0 +1,193 @@
+<h3>Aktualna zbiórka</h3>
+
+<hr>
+
+<div class="current-pool">
+
+    <% if(currentPool) { %>
+
+    <div class="row">
+        <div>
+            <h4>Zbiórka <strong>#<%= currentPool.nr %></strong></h4>
+
+            <table class="table1">
+                <tbody>
+                    <tr>
+                        <td>Typ inwestycji:</td><td><%= currentPool.type %></td>
+                    </tr>
+                    <tr>
+                        <td>Wnioskowany budżet:</td><td><span id="currentPool-amount" class="money"><%= currentPool.amount %></span></td>
+                    </tr>
+                    <tr>
+                        <td>Kwota czynszu:</td><td class="money"><%= currentPool.rent %></td>
+                    </tr>
+                    <tr>
+                        <td>Zysk roczny po kosztach:</td><td class="money"><%= (currentPool.profit_netto*12) %></td>
+                    </tr>
+                    <tr>
+                        <td>Zysk miesięczny po kosztach:</td><td class="money"><%= currentPool.profit_netto %></td>
+                    </tr>
+                    <tr>
+                        <td>Rentowność roczna:</td><td><%= currentPool.profitability %>%</td>
+                    </tr>
+                    <tr>
+                        <td>Rentowność miesięczna:</td><td><%= (currentPool.profitability/12).toFixed(2) %>%</td>
+                    </tr>
+                    <tr>
+                        <td>Liczba inwestorów:</td><td><%= currentPool.shareholders.length %></td>
+                    </tr>
+                    <tr><td><strong>Twój aktualny wkład:</strong></td><td  class="money"><strong><%= user.part %></strong></td></tr>
+                    <tr>
+                        <td><strong>Twój zysk netto/mc:</strong></td><td class="money"><strong><%= Math.floor((user.part/currentPool.amount)*currentPool.profit_netto*100)/100 %></strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h5 style="margin-top: 1.5rem">Szczegóły</h5>
+            <%- currentPool.details %>
+        </div>
+
+        <div>
+            <canvas height="150px" width="150px" id="loader"></canvas>
+
+            <h4>Zebrano: <strong style="margin-left: 10px"><span id="total" class="money"><%= currentPool.total.toFixed(2) %></span></strong></h4>
+        </div>
+    </div>
+
+    <%- include('../../../frontend/includes/flash.ejs') %>
+    
+    <div class="box">
+
+
+        <% if(currentPool.total < currentPool.amount) { %>
+
+            <h4>Inwestuj</h4>
+
+            <p>Możesz doinwestować dowolną kwotę ze swojego subkonta</p>
+
+            <span style="display: block; margin-bottom: .3rem">
+                (max: <span class="money"><%= currentPool.amount - currentPool.total %></span>)
+            </span>
+
+            <form action="/dashboard/transfer/create" method="POST">
+                <input type="number" id="amount" name="amount" step="0.01" min="0" max="<%= currentPool.max %>" required>
+                <input type="hidden" name="recipient_id" value="<%= currentPool._id %>">
+                <input type="hidden" name="author_id" value="<%= user._id %>">
+                <input type="hidden" name="title" value="Inwestycja #<%= currentPool.nr %>">
+                <input type="hidden" name="author_username" value="<%= user.username %>">
+                <input type="hidden" name="currentPool" value="<%= currentPool._id %>">
+                <input type="hidden" name="recipient_username" value="#<%= currentPool.nr %>">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="submit" class="btn" value="Doinwestuj">
+            </form>
+
+            <h4>Wycofaj</h4>
+            <p>Do momentu uzbierania pełnej sumy zbiórki możesz również wycofywać swoje środki</p>
+
+            <form action="/dashboard/transfer/back" method="POST">
+                <input type="number" name="amount" min="0" step="0.01" required>
+                <input type="hidden" name="recipient_id" value="<%= user._id %>">
+                <input type="hidden" name="author_id" value="<%= currentPool._id %>">
+                <input type="hidden" name="title" value="Wycofanie z #<%= currentPool.nr %>">
+                <input type="hidden" name="author_username" value="#<%= currentPool.nr %>">
+                <input type="hidden" name="currentPool" value="<%= currentPool._id %>">
+                <input type="hidden" name="recipient_username" value="<%= user.username %>">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="submit" class="btn" value="Wypłać">
+            </form>
+
+      <% } else { %>
+
+        <h4>Zebrano 100% potrzebnej kwoty</h4>
+        <p>Zbiórka oczekuje na zamknięcie przez Administratora</p>
+
+        <% if(user.role == 'administrator') { %>
+
+            <h3>Witaj <strong style="margin-left: .5rem"><%= user.username %></strong></h3>
+            <h3>Zdecyduj co dalej ze zbiórką</h3>
+
+            <form id="finish-pool-form" action="/dashboard/pool/<%= currentPool._id %>/edit" method="POST">
+                <label for="status">Wybiesz finished jeśli chcesz zarchiwizować tą zbiórkę</label>
+                <select name="status" id="status">
+                    <option value="finished">finished</option>
+                </select>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="submit" class="btn" value="Zatwierdź">
+            </form>
+
+        <% } %>
+
+      <% } %>
+        
+    </div>
+
+    <div class="box">
+        <h3>Inwestorzy:</h3>
+
+        <table class="table2">
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th>Inwestor</th>
+                    <th>Inwestycja</th>
+                </tr>
+                <% if(currentPool.shareholders.length) { 
+
+                     for(let i=0; i < currentPool.shareholders.length; i++) { %>
+
+                        <tr>
+                            <td><%= i+1 %></td>
+                            <td><%= currentPool.shareholders[i].username %></td>
+                            <td class="money"><%= currentPool.shareholders[i].value.toFixed(2) %></td>
+                        </tr>
+
+                <% }} %>
+            </tbody>
+        </table>
+    </div>
+
+    <section class="comments">
+
+        <h3>Komentarze inwestorów</h3>
+
+        <% currentPool.comments.forEach(comment => { %>
+
+            <div class="single-comment">
+                <div class="comment-credentials">
+    
+                    <h4>
+                        <span>
+                            <strong>
+                                <ion-icon name="person"></ion-icon><%= comment.author_username %>
+                            </strong>
+                        </span>
+                        <div class="comment-date">
+                            <ion-icon name="calendar"></ion-icon><%= comment.created_at %>
+                        </div>
+                    </h4>
+    
+                </div>
+                <div class="comment-content">
+                    <p><%= comment.content %></p>
+                </div>
+            </div>
+
+        <% }) %>
+
+        <form action="/comment/create" style="margin-top: 2rem" method="POST">
+            
+            <label for="content">Skomentuj</label>
+            <textarea name="content" id="content" cols="30" rows="1" required></textarea>
+
+            <input type="hidden" name="commentable_id" value="<%= currentPool._id %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="submit" class="btn" value="Napisz">
+        </form>
+
+    </section>
+
+    <% } else { %>
+
+        <h3>Administrator nie utworzył jeszcze nowej zbiórki</h3>
+
+    <% } %>
+</div>

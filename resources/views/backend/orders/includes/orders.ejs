@@ -1,0 +1,38 @@
+<h3>Moje zamówienia</h3>
+
+<hr>
+
+<div class="box">
+
+<% if(!orders.length) { %>
+    <h4>Brak zamówień</h4>
+<% } else { %>
+
+    <div class="pools-list" >
+
+        <div class="pools-list-header">
+            <div>Typ</div>
+            <div>Status</div>
+            <div>Produkt</div>
+        </div>
+
+  <% orders.forEach(order => { %>
+
+        <div class="pools-list-item">
+            <div>
+                <% if(order.orderable_type == 'studio') { %>Kawalerka<% } %>
+            </div>
+            <div>
+                <%= order.status %>
+            </div>
+            <div>
+                <a href="/dashboard/products/property/<%= order.orderable_id %>">
+                    <button class="btn">Produkt</button>
+                </a>
+            </div>
+        </div>
+
+   <% });
+} %>
+
+</div>

@@ -1,0 +1,16 @@
+<ul class="single-page-menu">
+    <li id="account_li">
+        <% if(specyficUser) user = specyficUser %> 
+        <a href="/dashboard/account/<%= user.username %>">Dane o mnie</a>
+    </li>
+    <li id="password_li">
+        <a href="/dashboard/password">Hasło</a>
+    </li>
+    <li id="account_documents_li">
+        <a href="/dashboard/documents">Dokumenty</a>
+    </li>
+</ul>
+
+<hr>
+
+<span id="page" style="display:none"><%= page %></span>

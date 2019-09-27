@@ -1,0 +1,29 @@
+<h3>Aktywa</h3>
+
+<%- include('../../../frontend/includes/flash.ejs') %>
+
+<div id="admin">
+
+    <div class="box">
+
+        <h4>Zatwierdź aktywo</h4>
+
+            <label for="type">Typ (kawalerka, blok, elektrownia)</label>
+            <select id="choose-asset" name="type" id="type">
+                <option value="studio" selected="selected">Kawalerka</option>
+                <option value="Mieszkanie">Mieszkanie</option>
+                <option value="Dom">Dom</option>
+                <option value="Blok">Blok</option>
+                <option value="Elektrownia">Elektrownia</option>
+                <option value="Maszyna">Maszyna</option>
+            </select>
+
+            <div id="specyfic-asset">
+
+            </div>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    </div>
+    
+</div>

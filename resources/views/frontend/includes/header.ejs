@@ -1,0 +1,32 @@
+<header class="page-header">
+
+    <div class="container">
+        <section class="menu-brand">
+            <a href="/">
+                <img src="/images/Logo-blog.png">
+            </a>
+        </section>
+        
+        <section>
+            <% if(user) { %>
+
+            <a href="/dashboard"><%= user.username %></a>
+            
+            <% } else { %>
+
+                <form action="/login" method="POST" id="login-form">
+
+                    <div class="row">     
+                        <input name="username" class="form-control input-dark ml" type="text" placeholder="Username" autocomplete="off">
+                        <input name="password" class="form-control input-dark ml" type="password" placeholder="Password">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button class="btn btn-sm">Zaloguj się</button>
+                    </div>
+                    
+                </form> 
+        </section>
+
+        <% } %>
+    </div>
+    
+</header>

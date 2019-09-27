@@ -1,0 +1,49 @@
+<%- include('includes/head') %>
+
+<%- include('includes/header') %>
+
+<section class="register page-section">
+    <div class="container">
+        <div class="row">
+
+            <div>
+                <h1>Zbieramy na mieszkanie!</h1>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio libero aliquam, consequuntur, porro possimus ad suscipit repellat quod adipisci laudantium error recusandae accusamus sint quidem fugit officia vel quam reprehenderit in omnis eveniet. Cupiditate sapiente cumque omnis nostrum eum quis, officia ipsa nobis, assumenda alias corporis quo perferendis suscipit hic voluptas aperiam illum asperiores harum consequuntur. Provident, fuga? Cum a commodi ea totam numquam! Corporis quo soluta numquam ab, deserunt earum praesentium eligendi at ex error quos id, vel adipisci! Laudantium quis qui officia cum officiis? Adipisci laboriosam, suscipit alias, debitis sequi eveniet fugiat id praesentium eligendi enim quisquam inventore. Facere nobis nihil omnis!</p>
+            </div>
+
+            <form action="/register" method="POST" id="registration-form">
+
+                <% regErrors.forEach(function(message) { %>
+                    <div class="alart alert-danger small"><%= message %></div>
+                <% }) %>
+            
+                <div class="form-group">
+                    <label for="username-register"><small>Nazwa użytkownika</small></label>
+                    <input name="username" id="username-register" class="form-control" type="text" placeholder="Wybierz swój nick" autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email-register"><small>Email</small></label>
+                    <input name="email" id="email-register" class="form-control" type="text" placeholder="you@example.com" autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password-register"><small>Hasło</small></label>
+                    <input name="password" id="password-register" class="form-control" type="password" placeholder="Ustaw bezpieczne hasło">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password-register"><small>Hasło</small></label>
+                    <input id="confirm-password-register" class="form-control" type="password" placeholder="Potwierdź hasło">
+                </div>
+                
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-green btn-lg">Utwórz konto</button>
+        
+            </form>
+        </div>
+    </div>
+</section>
+
+
+<%- include('includes/footer') %>

@@ -1,0 +1,69 @@
+/* Buttons */
+.btn {
+    display: inline-block;
+    background: #3e6edf;
+    color: #fff;
+    padding: 12px 18px;
+    font-size: 18px;
+    border-radius: 3px;
+    border: 0;
+    cursor: pointer; 
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn i {
+    margin-left: 6px;
+}
+
+/* Buttons sizes */
+.btn-sm {
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.btn-lg {
+    font-size: 22px;
+    padding: 16px 28px;   
+}
+
+/* Buttons colors */
+.btn-gray {
+    background: #808080;
+    color: #fff;
+}
+
+.btn-yellow {
+    background: #ffe522;
+    color: #333;
+}
+
+@media (max-width: 770px) {
+    .btn{
+        padding: 8px 14px;
+        font-size: 14px;
+    }
+
+    .intro-text{
+        top: 8%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

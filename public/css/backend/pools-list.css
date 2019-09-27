@@ -1,0 +1,32 @@
+.pools-list-header {
+    display: flex;
+    flex-wrap: nowrap;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(100, 162, 86, 0.4);
+}
+
+.pools-list-header div,
+.pools-list-item div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 33.3333%;
+    padding: .3rem;
+}
+
+.pools-list-item div > div{
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.pools-list-item{
+    display: flex;
+    border-bottom: 1px solid rgba(100, 162, 86, 0.4);
+    transition: all .2s ease;
+}
+
+.pools-list-item:hover{
+    background: rgba(100, 162, 86, 0.1);
+}

@@ -1,0 +1,22 @@
+<h3>Użytkownicy</h3>
+<hr>
+
+<div class="box">
+    <h3>Liczba użytkowników: <%= users.length %></h3>
+    <table class="table1">
+        <tbody>
+            <% users.forEach(user => { %>
+                <tr>
+                    <td><%= user.username %></td>
+                    <td><%= user.status %></td>
+                    <td><%= user.created_at %></td>
+                    <td>
+                        <a href="/dashboard/account/<%= user.username %>">
+                            <button class="btn">Przejdź</button>
+                        </a>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>

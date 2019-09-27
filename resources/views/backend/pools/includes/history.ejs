@@ -1,0 +1,43 @@
+<h3>Historia zbiórek</h3>
+
+<hr>
+
+<div class="box">
+
+    <% if(pools.length) { %>
+
+        <div class="pools-list" >
+
+            <div class="pools-list-header">
+                <div>Rodzaj inwestycji</div>
+                <div>Zebrana kwota</div>
+                <div>Liczba inwestorów</div>
+            </div>
+
+        <%   pools.forEach(pool => { %>
+
+                <a href="/dashboard/pool/<%= pool._id %>">
+                    <div class="pools-list-item">
+                        <div>
+                            #<%= pool.nr %> <%= pool.type %>
+                        </div>
+                        <div>
+                            <span class="money"><%= pool.amount %></span>
+                        </div>
+                        <div>
+                            <%= pool.shareholders.length %>
+                        </div>
+                    </div>
+                </a>
+                
+    <%      }); %>
+
+        </div>
+
+    <% } else { %>
+
+        <h3>Nie zarchiwizowano jeszcze żadnych zbiórek</h3>
+
+    <% } %>
+
+</div>

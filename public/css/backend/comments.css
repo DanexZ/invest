@@ -1,0 +1,26 @@
+.comments{
+    margin-top: 8rem;
+}
+
+.comments textarea{
+    outline: none;
+    min-width: 100%;
+    max-width: 100%;
+}
+
+.single-comment{
+    border: 1px solid rgb(230,230,230);
+    padding: .75rem;
+    margin-bottom: .5rem;
+    box-shadow: 2px 2px rgb(210, 210, 210);
+}
+
+.comment-credentials span{
+    margin-right: 10%;
+}
+
+.comment-date{
+    font-size: .7rem;
+    color: #333;
+}
+

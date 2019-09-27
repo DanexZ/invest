@@ -1,0 +1,47 @@
+.dashboard-menu{
+    display: flex;
+    flex-direction: column;
+    background: rgb(247,247,247);
+    border-right: 1px solid rgb(238,238,238);
+    width: 200px;
+    padding: 1rem .75rem;
+    color: rgb(124, 145, 171);
+    font-size: .7rem;
+}
+
+.dashboard-menu .active{
+    color: rgb(51, 69, 90);
+}
+
+.dashboard-menu li{
+    display: flex;
+    align-items: center;
+    padding: .5rem 0;
+    border-bottom: 1px solid rgb(230,230,230);
+    border-top: 1px solid #fff;
+}
+
+.dashboard-menu li:first-child
+{
+    border-top: none;
+}
+
+.dashboard-menu li:last-child{
+    border-bottom: 0;
+}
+
+.dashboard-menu a{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: .1rem .5rem;
+    color: rgb(124, 145, 171);
+}
+
+.dashboard-menu a:hover{
+    background: rgb(238,238,238);
+}
+
+.dashboard-menu ion-icon{
+    font-size: 1.2rem;
+}

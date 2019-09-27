@@ -1,0 +1,14 @@
+<h3>Wpłać środki na swoje subkonto</h3>
+
+<%- include('../../../frontend/includes/flash.ejs') %>
+
+<form action="/payment/create" method="POST">
+    <input type="number" id="amount" name="amount" min="50" step="0.01" required>
+    <input type="hidden" name="author_id" value="<%= user._id %>">
+    <input type="hidden" name="title" value="ZASILENIE KONTA <%= user.username %>">
+    <input type="hidden" name="author_username" value="<%= user.username %>">
+    <input type="hidden" name="recipient_username" value="<%= user.username %>">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="submit" class="btn" value="Wpłać">
+</form>
+

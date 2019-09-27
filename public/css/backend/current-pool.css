@@ -1,0 +1,79 @@
+.current-pool .row > div{
+    width: 50%;
+}
+
+.table1 td{
+    min-width: 200px;
+    padding: .2rem;
+    border-bottom: .5px solid rgba(100, 162, 86, 0.4);
+}
+
+.table1 tr td:nth-child(1){
+    color: rgb(100, 162, 86);
+}
+
+.table1 tr td:nth-child(2){
+    font-weight: 700;
+}
+
+.table2{
+    width: 100%;
+}
+
+.table2 td,
+.table2 th{
+    text-align: center;
+    padding: .3rem;
+}
+
+.table2 th{
+    font-weight: 400;
+}
+
+.table2 tr:nth-child(2n+2){
+    background: rgb(241,241,241);
+}
+
+.table2 td{
+    font-weight: 700;
+    color: rgb(100, 162, 86);
+    border-top: 1px solid rgb(100, 162, 86);
+}
+
+.table2 tr td:nth-child(1),
+.table2 tr th:nth-child(1){
+    width: 4%;
+}
+
+.table2 tr td:nth-child(2),
+.table2 tr th:nth-child(2){
+    width: 34%;
+}
+
+.table2 tr td:nth-child(3),
+.table2 tr th:nth-child(3){
+    width: 50%;
+}
+
+@media(max-width: 670px){
+    .current-pool .row > div{
+        width: 100%;
+        
+    }
+
+    .current-pool .row > div:nth-child(1){
+        margin-bottom: 2rem;
+    }
+
+    .current-pool .row > div:nth-child(2){
+        text-align: center;
+    }
+
+    .current-pool .row > div:nth-child(2) h4{
+        justify-content: center;
+    }
+
+    .table1 td{
+        min-width: 145px;
+    }
+}

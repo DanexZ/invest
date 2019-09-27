@@ -1,0 +1,55 @@
+
+/* page-header */
+.page-header {
+    background-color: rgb(41,41,41);
+    border-bottom: 2px solid rgb(0,0,0);
+    box-shadow: 0 0 18px rgba(0,0,0,0.12);
+    padding: .5rem;
+}
+
+.page-header a{
+    color: #fff;
+}
+
+.page-header img{
+    width: 250px;
+}
+
+.page-header form{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-header input{
+    width: 176px;
+    margin-bottom: 0;
+}
+
+.page-header button{
+    margin-left: .75rem;
+}
+
+@media(max-width: 479px){
+    .page-header .container{
+        flex-direction: column;
+    }
+
+    .page-header section{
+        width: 100%;
+    }
+
+    .page-header img{
+        width: 150px;
+    }
+
+    .menu-brand{
+        text-align: center;
+    }
+
+    .page-header input,
+    .page-header .btn {
+        width: 100%;
+        margin-top: .5rem;
+    }
+}

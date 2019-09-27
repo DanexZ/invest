@@ -1,0 +1,21 @@
+<h3><a href="/dashboard/products/properties"><< Wróć do listy mieszkań</a></h3>
+
+<h3><% if(property.type == 'studio') { %>Kawalerka<% } %></h3>
+
+<hr>
+
+<%- include('../../../frontend/includes/flash.ejs') %>
+
+<section class="photos">
+    <img src="/images/mieszkanie1.jpg" alt="" style="max-width: 100%">
+</section>
+
+<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima fugiat corrupti quos, corporis, odit officia a iste amet nemo eos officiis nam ullam voluptatibus labore! Quia, inventore corporis eos minus velit laborum natus perspiciatis ipsa, mollitia enim atque voluptates, facere officia ipsum doloremque. Maxime labore praesentium delectus id deserunt voluptatibus at ea rem officia esse. Quae magni perferendis, aliquam maiores obcaecati explicabo. Odit labore eaque repudiandae, natus possimus animi quo vel et esse. Distinctio accusamus nostrum consequatur enim dolor voluptatum laudantium alias, minus maiores perferendis non, aspernatur dicta itaque ut vitae esse necessitatibus facere nemo sit doloremque a quas, consectetur praesentium quo. Tempora, sunt incidunt dolorum numquam sit aliquam cum odit quaerat beatae debitis accusantium at ullam eos, quod adipisci quas, eaque pariatur. Nam odit, architecto itaque excepturi porro et nobis qui officia numquam. Facilis sunt alias velit eaque deserunt sequi omnis, ducimus veritatis ex cum voluptates possimus consequuntur fugit doloribus est harum voluptatum corporis voluptate? Incidunt impedit at ipsa vero nisi aut dolorum qui, hic doloremque totam, explicabo repudiandae ipsum, minus dicta rerum odit esse. Vel quidem tempora neque facilis ut, consectetur fugiat assumenda et, quam ex repudiandae, sed quo quas dignissimos nobis vitae amet qui natus nemo itaque.</p>
+
+<h3>Jesteś zainteresowany tym mieszkaniem?</h3>
+<p>Dodaj to mieszkanie do swoich zamówień a skontaktujemy się z Tobą</p>
+
+<form action="/order/create/<%= property._id %>/<%= property.type %>" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button class="btn">ZAMÓW</button>
+</form>

@@ -1,0 +1,64 @@
+<ul class="dashboard-menu">
+    <li>
+        <a href="/dashboard" class="active">
+            <ion-icon name="home"></ion-icon>Strona główna
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/account/<%= user.username %>">
+            <i class="fas fa-user-cog" style="font-size: 130%"></i>Mój profil
+        </a>
+    </li>
+    <% if(user.role == 'administrator') { %>
+        <li>
+            <a href="/dashboard/admin">
+                <ion-icon name="qr-scanner"></ion-icon>Zarządzaj
+            </a>
+        </li>
+    <% } %>
+    <li>
+        <a href="#">
+            <ion-icon name="information-circle-outline"></ion-icon>Informacje
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/pools">
+            <ion-icon name="add-circle-outline"></ion-icon>Zbiórki
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/assets/properties">
+            <i class="far fa-chart-bar"></i>Aktywa
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/orders">
+            <ion-icon name="book"></ion-icon>Moje zamówienia
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/subkonto">
+            <ion-icon name="git-compare"></ion-icon>Subkonto
+        </a>
+    </li>
+    <li>
+        <a href="/dashboard/my-products">
+            <i class="fab fa-product-hunt"></i>Produkty
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            <ion-icon name="cash"></ion-icon>Pożyczki
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            <ion-icon name="chatboxes"></ion-icon>Wiadomości
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            <ion-icon name="return-right"></ion-icon>Forum
+        </a>
+    </li>
+</ul>

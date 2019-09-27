@@ -1,0 +1,51 @@
+<h3>Historia płatności</h3>
+
+<div class="box">
+
+    <% if(!transactions.length || (transactions.length == 1 && transactions[0].status == 'pending' )) { %>
+
+    <h4>Nie masz jeszcze żadnych operacji na subkoncie</h4>
+
+    <% } else { %>
+
+    <table class="operations">
+        <tbody>
+            <tr>
+                <th>Data</th>
+                <th>Odbiorca/Nadawca</th>
+                <th>Tytuł</th>
+                <th>Kwota</th>
+            </tr>
+
+        <% transactions.forEach(transaction => {
+
+            if( transaction.status != 'pending' ) { %>
+
+                <tr>
+                    <td><%= transaction.created_at %></td>
+                    <td>
+                        <% if(transaction.author_id != user._id && transaction.recipient_id == user._id) { %>
+                            <%= transaction.author_username %>
+                        <% } else if( transaction.recipient_id != user._id ) { %>
+                            <%= transaction.recipient_username %>
+                        <% } %>
+                    </td>
+                    <td><%= transaction.title %></td>
+                    <td class="money">
+                        <% if(transaction.author_id == user._id && transaction.type != 'inpayment' ) {  %>
+                            -<%= transaction.amount %>
+                        <% } else { %>
+                            <%= transaction.amount %>
+                        <% } %>
+                    </td>
+                </tr>
+
+            <% }
+        }); %>
+
+        </tbody>
+    </table>
+</div>
+
+    <% } %>
+        

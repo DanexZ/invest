@@ -1,0 +1,27 @@
+<h3>Nieruchomości</h3>
+
+<div id="assets_first" class="box">
+
+    <% if(properties.length) { %>
+
+        <table>
+            <tbody>
+                <tr>
+                    <th>Typ</th>
+                    <th>Adres</th>
+                    <th>Historia zysków</th>
+                </tr>
+
+        <% properties.forEach(property => { %>
+            <tr>
+                <td><% if(property.type == 'studio') { %> Kawalerka <% } %>  </td>
+                <td><%= property.city %> <%= property.postcode %> <%= property.street %>/<%= property.apartment_nr %></td>
+                <td><a href="/dashboard/asset/<%= property._id %>/incomes"><button class="btn">Zyski</button></a></td>
+            </tr>
+        <% }) %>
+
+            </tbody>
+        </table>
+
+    <% } %>
+</div>

@@ -1,0 +1,19 @@
+
+/* page-header */
+.page-header {
+    background-color: rgb(41,41,41);
+    border-bottom: 2px solid rgb(0,0,0);
+    box-shadow: 0 0 18px rgba(0,0,0,0.12);
+}
+
+.page-header input{
+    margin-bottom: 0;
+}
+
+.menu-brand{
+    width: 250px;
+}
+
+.menu-brand img{
+    width: 100%;
+}

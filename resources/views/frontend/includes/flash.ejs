@@ -1,0 +1,12 @@
+<% errors.forEach(function(message) { %>
+    <div class="alert alert-danger"><%= message %><span class="exit">x</span></div>
+<% }) %>
+
+<% success.forEach(function(message) { %>
+    <div class="alert alert-success"><%= message %><span class="exit">x</span></div>
+<% }) %>
+
+<% if(recipient_username) { %>
+    <input type="hidden" id="recipient_username_FromServer" value="<%= recipient_username %>">
+    <input type="hidden" id="amount_value_FromServer" value="<%= value %>">
+<% } %>

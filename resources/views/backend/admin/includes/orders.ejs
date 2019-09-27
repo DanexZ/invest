@@ -1,0 +1,48 @@
+<h3>Zamówienia</h3>
+<hr>
+
+<div class="box">
+
+    <% if(orders.length) { %>
+
+        <div class="pools-list" >
+
+            <div class="pools-list-header">
+                <div>Typ</div>
+                <div>Zamawiąjący</div>
+                <div>Aktywo</div>
+            </div>
+
+        <%   orders.forEach(order => { %>
+
+                <div class="pools-list-item">
+                    <div>
+                        <%= order.orderable_type %>
+                    </div>
+                    <div>
+                        <a href="/dashboard/account/<%= order.author.username %>">
+                            <button class="btn">ZAMAWIAJĄCY</button>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="/dashboard/admin/asset/<%= order.orderable_id %>">
+                            <button class="btn">AKTYWO</button>
+                        </a>
+
+                        <form id="order<%= order._id %>" class="umowa_najmu_form">
+                            <input type="hidden" id="tenant_name<%= order._id %>" placeholder="Imię">
+                            <input type="hidden" id="tenant_surname<%= order._id %>" placeholder="Nazwisko">
+                            <input type="hidden" id="pesel<%= order._id %>" placeholder="Pesel">
+                            
+                            <button class="btn">Generuj umowę</button>
+                        </form>
+                    </div>
+                </div>
+                
+    <%      }); %>
+
+        </div>
+
+    <% } %>
+
+</div>

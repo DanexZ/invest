@@ -1,0 +1,22 @@
+<div class="dashboard-header">
+    <div class="backend-container row">
+        <section class="brand">
+           <a href="/dashboard"><img src="/images/Logo-blog.png" alt="MoneyU"></a>
+        </section>
+        <ul class="navbar">
+            <li>
+                <a href="/dashboard/subkonto"">
+                    Środki: <span class="subkonto-value money"><%= user.subkonto.toFixed(2) %></span>
+                </a>
+            </li>
+            <li>
+                <form id="logout-form" action="/logout" method="POST" style="display: none">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="submit">
+                </form>
+                <a id="logoutBtn"><ion-icon name="power"></ion-icon>Wyloguj</a>
+            </li>
+        </ul>
+        <div class="hamburger"></div>
+    </div>
+</div>

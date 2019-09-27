@@ -1,0 +1,98 @@
+.dashboard-header{
+    height: 50px;
+    background-color: rgb(41,41,41);
+    color: #777;
+    font-size: .8rem;
+}
+
+.dashboard-header li{
+    margin-left: 1rem;
+}
+
+.dashboard-header a{
+    display: flex;
+    align-items: center;
+    color: #777;
+}
+
+.dashboard-header a:hover{
+    color: #fff;
+}
+
+.backend-container.row{
+    height: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand img{
+    width: 150px;
+}
+
+.navbar{
+    display: flex;
+}
+
+/* Menu Hamburger */
+.hamburger{
+    display: none;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 20px;
+    height: 12px;
+    border: 0;
+    border-top: 2px solid #fff;
+    background: transparent;
+    cursor: pointer;
+    transition: 0.3s transform linear;
+}
+
+.hamburger::before, .hamburger::after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-top: 2px solid #fff;
+    transform: translateY(5px);
+}
+
+.hamburger::after{
+    transform: translateY(12px);
+    transition: 0.3s transform linear;
+}
+
+.hamburger:focus{
+    transform: rotate(45deg) translateY(5px);
+    border: none;
+    background-color: transparent;
+}
+
+
+.hamburger:focus::after{
+    transform: rotate(-90deg) translateX(-10px);
+}
+
+@media(max-width: 960px) {
+    .navbar{
+        margin-right: 50px;
+    }
+    .hamburger{
+        display: block;
+    }
+}
+
+@media(max-width: 479px){
+    .brand img{
+        width: 120px;
+    }
+
+    .navbar{
+        flex-direction: column;
+    }
+    
+    .navbar li {
+        margin-left: none;
+    }
+}

@@ -1,0 +1,38 @@
+.operations{
+    width: 100%;
+}
+
+.operations td,
+.operations th{
+    text-align: center;
+    padding: .3rem;
+}
+
+.operations td{
+    border-top: 1px solid rgb(238,238,238);
+    color: rgb(51, 69, 90);
+}
+
+.operations tr:last-child td{
+    border-bottom: 1px solid rgb(238,238,238);
+}
+
+.operations tr td:nth-child(1),
+.operations tr th:nth-child(1){
+    width: 14%;
+}
+
+.operations tr td:nth-child(2),
+.operations tr th:nth-child(2){
+    width: 20%;
+}
+
+.operations tr td:nth-child(3),
+.operations tr th:nth-child(3){
+    width: 40%;
+}
+
+.operations tr td:nth-child(4),
+.operations tr th:nth-child(4){
+    width: 26%;
+}

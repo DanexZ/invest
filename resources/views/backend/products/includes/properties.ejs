@@ -1,0 +1,47 @@
+<h3>Mieszkania</h3>
+<hr>
+
+<div class="box">
+
+    <h4 style="justify-content: center">Aby nająć interesujące Cię mieszkanie przejdź do szczegółów danego apartamentu i złóż zamówienie</h4>
+    <p style="text-align: center">(Jeżeli mieszkanie jest w tym momencie zajęte przez kogoś innego musisz poczekać aż zrezygnuje. Jeśli tak się stanie automatycznie skontaktujemy się z Tobą.)</p>
+
+    <% if(properties.length) { %>
+
+        <div class="pools-list" >
+
+            <div class="pools-list-header">
+                <div></div>
+                <div>Podstawowe dane</div>
+                <div></div>
+            </div>
+
+        <%   properties.forEach(property => { %>
+
+                <a href="/dashboard/products/property/<%= property._id %>">
+                    <div class="pools-list-item">
+                        <div>
+                            avatar
+                        </div>
+                        <div>
+                            <div>Typ: <% if(property.type == 'studio') { %>Kawalerka<% } %></div>
+                            <div>Czynsz: <span class="money"><%= property.rent %></span></div>
+                            <div><strong><%= property.state %></strong></div>
+                        </div>
+                        <div>
+                            <button class="btn">Szczegóły</button>
+                        </div>
+                    </div>
+                </a>
+                
+    <%      }); %>
+
+        </div>
+
+    <% } else { %>
+
+        <h3>Ups. Nie posiadamy jeszcze żadnych produktów :(</h3>
+
+    <% } %>
+
+</div>

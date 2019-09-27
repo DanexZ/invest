@@ -1,0 +1,44 @@
+<%- include('nav_pools') %>
+
+<%- include('../../../frontend/includes/flash.ejs') %>
+
+<h3>Zbiórki</h3>
+
+    <div class="box">
+
+        <% pools.forEach(pool => { %>
+
+            <div class="box">
+                <h4>Zbiórka <strong>#<%= pool.nr %></strong></h4>
+
+                <table class="table1">
+                    <tbody>
+                        <tr>
+                            <td>Typ inwestycji:</td><td><%= pool.type %></td>
+                        </tr>
+                        <tr>
+                            <td>Wnioskowany budżet:</td><td><span class="money"><%= pool.amount %></span></td>
+                        </tr>
+                        <tr>
+                            <td>Kwota czynszu:</td><td class="money"><%= pool.rent %></td>
+                        </tr>
+                        <tr>
+                            <td>Zysk roczny po kosztach:</td><td class="money"><%= (pool.profit_netto*12) %></td>
+                        </tr>
+                        <tr>
+                            <td>Zysk miesięczny po kosztach:</td><td class="money"><%= pool.profit_netto %></td>
+                        </tr>
+                        <tr>
+                            <td>Rentowność roczna:</td><td><%= pool.profitability %>%</td>
+                        </tr>
+                        <tr>
+                            <td>Rentowność miesięczna:</td><td><%= (pool.profitability/12).toFixed(2) %>%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        <% }); %>
+        
+    </div>

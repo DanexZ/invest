@@ -1,0 +1,54 @@
+#admin table{
+    width: 100%;
+}
+
+#admin h4{
+    justify-content: center;
+    margin-bottom: .8rem;
+}
+
+.case{
+    padding-top: .5rem;
+}
+
+#admin td,
+#admin th{
+    text-align: center;
+    padding: .3rem;
+}
+
+#admin td{
+    border-top: 1px solid rgb(238,238,238);
+    color: rgb(51, 69, 90);
+    background: rgba(255, 230, 0, .2);
+}
+
+#admin tr:last-child td{
+    border-bottom: 1px solid rgb(238,238,238);
+}
+
+#admin tr td:nth-child(1),
+#admin tr th:nth-child(1){
+    width: 14%;
+}
+
+#admin tr td:nth-child(2),
+#admin tr th:nth-child(2){
+    width: 20%;
+}
+
+#admin tr td:nth-child(3),
+#admin tr th:nth-child(3){
+    width: 30%;
+}
+
+#admin tr td:nth-child(4),
+#admin tr th:nth-child(4){
+    width: 26%;
+}
+
+#admin tr td:nth-child(5),
+#admin tr th:nth-child(5){
+    width: 10%;
+}
+

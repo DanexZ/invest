@@ -1,0 +1,73 @@
+<h3>
+    <ion-icon name="home"></ion-icon>Strona główna
+</h3>
+
+<hr>
+
+<div class="row">
+    <div class="tile">
+        <h4><ion-icon name="person"></ion-icon>Informacje o koncie</h4>
+        <hr>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Użytkownik:</td><td><%= user.username %></td>
+                </tr>
+                <tr>
+                    <td>Saldo konta:</td><td><span class="subkonto-value money"><%= user.subkonto %></span></td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="/dashboard/subkonto/inpay"><button class="btn">Doładuj</button></a>
+    </div>
+
+    <div class="tile">
+        <h4><ion-icon name="person"></ion-icon>Informacje finansowe</h4>
+        <hr>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Wartość konta</td><td class="money">0.00</td>
+                </tr>
+                <tr>
+                    <td>Zysk z poprzedniego miesiąca:</td><td class="money">0.00</td>
+                </tr>
+                <tr>
+                    <td>Zysk w tym roku:</td><td class="money">0.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="tile">
+        <h4><ion-icon name="person"></ion-icon>Bieżąca zbiórka</h4>
+        <hr>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Inwestycja w zbiórce:</td><td class="money"><%= user.part %></td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="/dashboard/pools"><button class="btn">Inwestuj</button></a>
+    </div>
+
+    <div class="tile">
+        <h4><ion-icon name="person"></ion-icon>Informacje o zadłużeniu</h4>
+        <hr>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Pożyczki w trakcie spłaty:</td><td>0</td>
+                </tr>
+                <tr>
+                    <td>Pozostało do spłaty:</td><td class="money">0.00</td>
+                </tr>
+                <tr>
+                    <td>Odsetki karne:</td><td class="money">0.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

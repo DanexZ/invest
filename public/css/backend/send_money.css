@@ -1,0 +1,11 @@
+.send_money form{
+    width: 100%!important
+}
+
+.send_money input{
+    min-width: 214px!important;
+}
+
+.send_money textarea{
+    min-width: 100%;
+}

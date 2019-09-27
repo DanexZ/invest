@@ -1,0 +1,63 @@
+<h3>Sprawy</h3>
+
+<%- include('../../../frontend/includes/flash.ejs') %>
+
+<div id="admin">
+
+<% if(currentPool) {
+
+    if(currentPool.total == currentPool.amount) { %>
+
+        <div class="case" style="text-align: center">
+            <h4>Bieżąca zbiórka oczekuje na zatwierdzenie</h4>
+    
+            <a href="/dashboard/pools"><button class="btn">Przejdź do zbiórki</button></a>
+        </div>
+    
+    
+<% }} %>
+
+ 
+<% if(pending_payments.length) { %>
+
+    <div class="case">
+        <h4>Istnieją wpłaty oczekujące na zatwierdzenie</h4>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Status</th>
+                        <th>Tytuł</th>
+                        <th>Kwota</th>
+                        <th>Czas</th>
+                        <th></th>
+                    </tr>
+                
+    
+        <% pending_payments.forEach(payment => { %>
+
+            <tr>
+                <td><%= payment.status %></td>
+                <td><%= payment.title %></td>
+                <td class="money"><%= payment.amount %></td>
+                <td><%= payment.created_at %></td>
+                <td>
+                    <form id="form<%= payment._id %>" class="verify-payment-form" action="/payment/<%= payment._id %>/edit" method="POST">
+                        <input id="author<%= payment._id %>" type="hidden" value="<%= payment.author_id %>">
+                        <input id="input<%= payment._id %>" type="hidden" value="<%= payment.amount %>">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button id="#btn<%= payment._id %>" class="btn">Zatwierdź</button>
+                    </form>
+                </td>
+            </tr>
+
+
+    <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+<% } %>
+
+</div>
+

@@ -1,0 +1,118 @@
+<h3>
+    <a href="/dashboard/pools/history"><< Wróć do listy</a>
+</h3>
+
+<hr>
+
+<div class="current-pool">
+
+    <div class="row">
+        <div>
+            <h4>Zbiórka <strong>#<%= pool.nr %></strong></h4>
+
+            <table class="table1">
+                <tbody>
+                    <tr>
+                        <td>Typ inwestycji:</td><td><%= pool.type %></td>
+                    </tr>
+                    <tr>
+                        <td>Wnioskowany budżet:</td><td><span id="currentPool-amount" class="money"><%= pool.amount.toFixed(2) %></span></td>
+                    </tr>
+                    <tr>
+                        <td>Kwota czynszu:</td><td class="money"><%= pool.rent.toFixed(2) %></td>
+                    </tr>
+                    <tr>
+                        <td>Zysk roczny po kosztach:</td><td class="money"><%= (pool.profit_netto*12).toFixed(2) %></td>
+                    </tr>
+                    <tr>
+                        <td>Zysk miesięczny po kosztach:</td><td class="money"><%= pool.profit_netto.toFixed(2) %></td>
+                    </tr>
+                    <tr>
+                        <td>Rentowność roczna:</td><td><%= pool.profitability.toFixed(2) %>%</td>
+                    </tr>
+                    <tr>
+                        <td>Rentowność miesięczna:</td><td><%= (pool.profitability/12).toFixed(2) %>%</td>
+                    </tr>
+                    <tr>
+                        <td>Liczba inwestorów:</td><td><%= pool.shareholders.length %></td>
+                    </tr>
+                    <tr><td><strong>Twój aktualny wkład:</strong></td><td  class="money"><strong><%= user.part.toFixed(2) %></strong></td></tr>
+                    <tr>
+                        <td><strong>Twój zysk netto/mc:</strong></td><td class="money"><strong><%= Math.floor((user.part/pool.amount)*pool.profit_netto*100)/100 %></strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h5 style="margin-top: 1.5rem">Szczegóły</h5>
+            <%- pool.details %>
+        </div>
+
+        <div>
+            <canvas height="150px" width="150px" id="loader"></canvas>
+
+            <h4>Zebrano: <strong style="margin-left: 10px"><span id="total" class="money"><%= pool.total %></span></strong></h4>
+        </div>
+    </div>
+
+    <div class="box">
+        <h3>Inwestorzy:</h3>
+
+        <table class="table2">
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th>Inwestor</th>
+                    <th>Inwestycja</th>
+                </tr>
+                <% for(let i=0; i < pool.shareholders.length; i++) { %>
+
+                    <tr>
+                        <td><%= i+1 %></td>
+                        <td><%= pool.shareholders[i].username %></td>
+                        <td class="money"><%= pool.shareholders[i].value.toFixed(2) %></td>
+                    </tr>
+
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <section class="comments">
+
+        <h3>Komentarze inwestorów</h3>
+
+        <% pool.comments.forEach(comment => { %>
+
+            <div class="single-comment">
+                <div class="comment-credentials">
+    
+                    <h4>
+                        <span>
+                            <strong>
+                                <ion-icon name="person"></ion-icon><%= comment.author_username %>
+                            </strong>
+                        </span>
+                        <div class="comment-date">
+                            <ion-icon name="calendar"></ion-icon><%= comment.created_at %>
+                        </div>
+                    </h4>
+    
+                </div>
+                <div class="comment-content">
+                    <p><%= comment.content %></p>
+                </div>
+            </div>
+
+        <% }); %>
+
+        <form action="/comment/create" style="margin-top: 2rem" method="POST">
+            
+            <label for="content">Skomentuj</label>
+            <textarea name="content" id="content" cols="30" rows="1" required></textarea>
+
+            <input type="hidden" name="commentable_id" value="<%= pool._id %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="submit" class="btn" value="Napisz">
+        </form>
+
+    </section>
+</div>
