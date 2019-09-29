@@ -1,2 +1,83 @@
 <h3>Moje produkty</h3>
 <hr>
+
+<%- include('../../../frontend/includes/flash.ejs') %>
+
+<div class="box">
+
+<% if(!userProducts.length) { %>
+
+    <h4>Nie korzystasz jeszcze z żadnych produktów</h4>
+<% } else { %>
+
+    <div class="pools-list" >
+
+  <% userProducts.forEach(product => { %>
+
+        <div class="pools-list-item">
+
+    <% if(product.type == 'studio') { %>
+
+            <div>Kawalerka <%= product.street %>/<%= product.apartment_nr %> <%= product.postcode %> <%= product.city %></div>
+            <div>
+                <a href="/dashboard/assets/property/<%= product._id %>">
+                    <button class="btn">Zobacz</button>
+                </a>
+            </div>
+            <div>
+                <div>Następny termin: <strong><%= product.nextPayment.termin %></strong></div>
+                <form id="transfer-form" action="/dashboard/transfer/create" method="POST">
+
+                    <input type="hidden" id="username" name="recipient_username" value="MoneyU" required>
+                    <input type="hidden" id="amount" name="amount" value="<%= product.nextPayment.amount %>" step="0.01" required>
+                    <input type="hidden" name="title" id="title" value="Kawalerka <%= product.street %>/<%= product.apartment_nr %> <%= product.postcode %> <%= product.city %> <%= product.nextPayment.termin %>" required>
+
+                    <input type="hidden" id="password" name="password">
+                    <input type="hidden" id="asset_id" name="asset_id"  value="<%= product._id %>">
+                    <input type="hidden" name="termin" value="<%= product.nextPayment.termin %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <button class="btn">Opłać</button>
+                </form>
+            </div>
+
+    <%  } %>
+
+        </div>
+
+        <div class="sub-menu">
+            <table class="operations">
+                <tbody>
+                    <tr>
+                        <th>Data</th>
+                        <th>Odbiorca/Nadawca</th>
+                        <th>Tytuł</th>
+                        <th>Kwota</th>
+                    </tr>
+                    <% product.transfers.forEach(transfer => { %>
+                        <tr>
+                            <td><%= transfer.created_at %></td>
+                            <td>
+                                <% if(transfer.author_id != user._id && transfer.recipient_id == user._id) { %>
+                                    <%= transfer.author_username %>
+                                <% } else if( transfer.recipient_id != user._id ) { %>
+                                    <%= transfer.recipient_username %>
+                                <% } %>
+                            </td>
+                            <td><%= transfer.title %></td>
+                            <td class="money">
+                                <%= transfer.amount %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+<% }) %>
+
+    </div>
+
+<% } %>
+
+</div>

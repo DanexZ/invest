@@ -1,6 +1,8 @@
 <h3>Zamówienia</h3>
 <hr>
 
+<%- include('../../../frontend/includes/flash.ejs') %>
+
 <div class="box">
 
     <% if(orders.length) { %>
@@ -11,6 +13,8 @@
                 <div>Typ</div>
                 <div>Zamawiąjący</div>
                 <div>Aktywo</div>
+                <div>Umowa</div>
+                <div>Przydziel</div>
             </div>
 
         <%   orders.forEach(order => { %>
@@ -28,13 +32,49 @@
                         <a href="/dashboard/admin/asset/<%= order.orderable_id %>">
                             <button class="btn">AKTYWO</button>
                         </a>
-
+                    </div>
+                    <div>
                         <form id="order<%= order._id %>" class="umowa_najmu_form">
-                            <input type="hidden" id="tenant_name<%= order._id %>" placeholder="Imię">
-                            <input type="hidden" id="tenant_surname<%= order._id %>" placeholder="Nazwisko">
-                            <input type="hidden" id="pesel<%= order._id %>" placeholder="Pesel">
+
+                            <input type="hidden" id="owner_name<%= order._id %>" value="<%= user.name %>">
+                            <input type="hidden" id="owner_surname<%= order._id %>" value="<%= user.surname %>">
+                            <input type="hidden" id="owner_account<%= order._id %>" value="<%= user.account %>">
+
+                            <input type="hidden" id="tenant_name<%= order._id %>" value="<%= order.author.name %>">
+                            <input type="hidden" id="tenant_surname<%= order._id %>" value="<%= order.author.surname %>">
+                            <input type="hidden" id="pesel<%= order._id %>" value="<%= order.author.pesel%>">
+                            <input type="hidden" id="id_card<%= order._id %>" value="<%= order.author.id_card %>">
+                            <input type="hidden" id="email<%= order._id %>" value="<%= order.author.email %>">
+                            <input type="hidden" id="phone_nr<%= order._id %>" value="<% order.author.phone_nr %>">
+
+                            <input type="hidden" id="rent<%= order._id %>" value="<%= order.asset.rent %>">
+                            <input type="hidden" id="deposit<%= order._id%>" value="<%= order.asset.deposit %>">
+                            <input type="hidden" id="meters<%= order._id %>" value="<% order.asset.meters %>">
+                            <input type="hidden" id="basement<%= order._id %>" value="<%= order.asset.basement %>">
+                            <input type="hidden" id="components<%= order._id %>" value="<%= order.asset.components %>">
+                            <input type="hidden" id="equipment<%= order._id %>" value="<%= order.asset.equipment %>">
+                            <input type="hidden" id="city<%= order._id %>" value="<%= order.asset.city %>">
+                            <input type="hidden" id="postcode<%= order._id %>" value="<%= order.asset.postcode %>" >
+                            <input type="hidden" id="street<%= order._id %>" value="<%= order.asset.street %>">
+                            <input type="hidden" id="apartment_nr<%= order._id %>" value="<%= order.asset.apartment_nr %>">
+                            <input type="hidden" id="register_nr<%= order._id %>" value="<%= order.asset.register_nr %>">
+                            <input type="hidden" id="light<%= order._id %>" value="<%= order.asset.light %>">
+                            <input type="hidden" id="gas<%= order._id %>" value="<%= order.asset.gas %>">
+                            <input type="hidden" id="water<%= order._id %>" value="<%= order.asset.water %>">
+                            <input type="hidden" id="court_city<%= order._id %>" value="<%= order.asset.court_city %>">
+                            <input type="hidden" id="spoldzielnia_name<%= order._id %>" value="<% order.asset.spoldzielnia_name %>">
+
                             
                             <button class="btn">Generuj umowę</button>
+                        </form>
+                    </div>
+                    <div>
+                        <form action="/dashboard/asset_client" method="POST">
+                            <input type="hidden" name="asset_id" value="<%= order.orderable_id %>">
+                            <input type="hidden" name="client_id" value="<%= order.author._id %>">
+
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="btn">Przydziel</button>
                         </form>
                     </div>
                 </div>

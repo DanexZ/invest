@@ -150,7 +150,10 @@ class User{
                     this.data.surname = '';
                     this.data.pesel = '';
                     this.data.id_card = '';
+                    this.data.phone_nr = '';
+                    this.data.account = '';
                     this.data.status = 'new';
+                    this.data.type = 'person'; //typ konta domyślnie person
                     this.data.created_at = moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss');
     
                     await usersCollection.insertOne(this.data);

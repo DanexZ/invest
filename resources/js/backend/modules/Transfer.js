@@ -2,6 +2,10 @@ class Transfer{
     constructor(){
         this.form = document.querySelector('#transfer-form');
         this.password = document.querySelector('#password');
+        this.asset_id = document.querySelector('#asset_id');
+        this.amount = document.querySelector('#amount');
+        this.username = document.querySelector('#username');
+        this.title = document.querySelector('#title');
         this.events();
     }
 
@@ -18,17 +22,29 @@ class Transfer{
 
     showConfirmBox(){
 
-        this.injectHTML();
+        let data = null;
 
-        const value = document.querySelector('#amount').value;
-        const author_id = document.querySelector('#author_id').value;
-        const recipient_username = document.querySelector('#username').value;
+        if(this.asset_id){
+            data = {
+                amount: this.amount.value,
+                username: this.username.value,
+                title: this.title.value
+            }
+        }
+
+        this.injectHTML(data);
+
         const confirmBtn = document.querySelector('#confirmBtn');
 
         confirmBtn.addEventListener('click', e => {
 
             const password = document.querySelector('#autorizePassword').value;
             this.password.value = password;
+
+            if(this.data){
+                const secondAmount = document.querySelector('#secondAmount').value;
+                this.amount.value = secondAmount;
+            }
 
             this.form.submit();
         });
@@ -37,22 +53,51 @@ class Transfer{
 
 
 
-    injectHTML(){
+    injectHTML(data=null){
 
         let node = document.createElement('div');
         node.classList.add('confirmBox');
-        node.innerHTML = 
+
+        let content = 
             `<span class="exit">x</span>
             <h2>Autoryzacja</h2>
             <div class="inputBox">
                 <input type="password" id="autorizePassword">
-                <label for="autorizePassword">Twoje haslo do konta</label>
+                <label for="autorizePassword">Twoje hasło do konta</label>
             </div>
             <button id="confirmBtn" class="btn">Prześlij</button>`;
+
+        if(data){
+            content =
+                `<span class="exit">x</span>
+                <h2>Autoryzacja</h2>
+                <div class="inputBox">
+                    <input type="password" id="autorizePassword">
+                    <label for="autorizePassword">Twoje hasło do konta</label>
+                </div>
+
+                <h2>Dane transferu</h2>
+
+                <div class="inputBox">
+                    <input type="number" id="secondAmount" value="${data.amount}" min="0" max="${data.amount}" step="0.01">
+                    <label for="secondAmount">Kwota</label>
+                </div>
+
+                <p>Odbiorca: <span style="font-weight: 700">${data.username}</span></p>
+                <p>Tytuł: <span style="font-weight: 700">${data.title}</span></p>
+
+                <button id="confirmBtn" class="btn">Prześlij</button>`;
+        }
+
+        node.innerHTML = content;
 
         const wrapper = document.querySelector('#confirmBox-wrapper');
 
         node = wrapper.appendChild(node);
+
+        if(data){
+            this.data = data;
+        }
 
         const exit = document.querySelector('.exit');
         exit.addEventListener('click', () => {

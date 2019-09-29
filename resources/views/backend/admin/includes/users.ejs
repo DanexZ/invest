@@ -15,6 +15,13 @@
                             <button class="btn">Przejdź</button>
                         </a>
                     </td>
+                    <td>
+                        <% user.nextPayments.forEach(payment => { %>
+                            <div><%= payment.type %></div>
+                            <div><%= payment.termin %></div>
+                            <div class="money"><%= payment.amount %></div>
+                        <% }); %>
+                    </td>
                 </tr>
             <% }); %>
         </tbody>

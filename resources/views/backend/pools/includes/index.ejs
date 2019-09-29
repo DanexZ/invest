@@ -71,9 +71,7 @@
             <form action="/dashboard/transfer/create" method="POST">
                 <input type="number" id="amount" name="amount" step="0.01" min="0" max="<%= currentPool.max %>" required>
                 <input type="hidden" name="recipient_id" value="<%= currentPool._id %>">
-                <input type="hidden" name="author_id" value="<%= user._id %>">
                 <input type="hidden" name="title" value="Inwestycja #<%= currentPool.nr %>">
-                <input type="hidden" name="author_username" value="<%= user.username %>">
                 <input type="hidden" name="currentPool" value="<%= currentPool._id %>">
                 <input type="hidden" name="recipient_username" value="#<%= currentPool.nr %>">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">

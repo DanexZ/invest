@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import Logoutform from './modules/LogoutForm';
 import VerifyPaymentForm from './modules/VerifyPaymentForm';
 import Exit from '../global/Exit';
@@ -82,3 +83,7 @@ if(document.querySelector('#specyfic-asset')){
 }
 
 new Emit();
+
+$('.pools-list-item').bind('click', function(){
+    $(this).next().slideToggle('fast');
+});

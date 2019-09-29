@@ -148,7 +148,7 @@ class Payment{
 
             try {
 
-                if( admin._id == new ObjectID('5d8013a6c339b81b08fcc619') ){
+                if( admin.role == 'administrator'){
 
                     let status = await this.actuallyUpdate(id);
                     resolve(status);

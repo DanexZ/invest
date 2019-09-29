@@ -1,9 +1,8 @@
-const Asset = require('../models/Asset');
+const AssetClient = require('../models/AssetClient');
 
-exports.create = (req, res) => {
+exports.update = (req, res) => {
 
     const backURL = req.header('Referer') || '/dashboard';
-    const asset = new Asset(req.body);
 
     if(req.session.user.role != 'administrator'){
 
@@ -11,13 +10,14 @@ exports.create = (req, res) => {
 
         return req.session.save(() => res.redirect(backURL));
     };
-    
 
-    asset.create()
+    const assetClient = new AssetClient();
+    assetClient.update(req.body.asset_id, req.body.client_id)
+  
 
-    .then((created_id) => {
+    .then((status) => {
 
-        req.flash('success', "Aktywo dodane!");
+        req.flash('success', "Aktywo zostało przydzielone do klienta!");
         req.session.save(() => res.redirect(backURL));
     })
 

@@ -53,6 +53,36 @@
     </div>
 
     <div class="tile">
+        <h4><ion-icon name="person"></ion-icon>Terminarz płatności</h4>
+        <hr>
+        <% if(userNextPayments.length) { %>
+            <table>
+                <tbody>
+
+                <% userNextPayments.forEach(payment => { %>
+
+                    <tr>
+                        <td>Produkt:</td><td><%= payment.type %></td>
+                    </tr>
+                    <tr>
+                        <td>Następny termin:</td><td><%= payment.termin %></td>
+                    </tr>
+                    <tr>
+                        <td>Kwota:</td><td class="money"><%= payment.amount %></td>
+                    </tr>
+                <% }); %>
+
+                </tbody>
+            </table>
+       <% } else { %>
+            <div>Nie posiadasz jeszcze żadnych produktów</div>
+       <% } %>
+        
+            
+        <a href="/dashboard/my-products"><button class="btn">Moje produkty</button></a>
+    </div>
+
+    <div class="tile">
         <h4><ion-icon name="person"></ion-icon>Informacje o zadłużeniu</h4>
         <hr>
         <table>

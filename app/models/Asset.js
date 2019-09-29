@@ -80,6 +80,16 @@ class Asset{
     }
 
 
+    all(){
+        return new Promise(async (resolve, reject) => {
+
+            const assets = await assetsCollection.find().toArray();
+
+            resolve(assets);
+        });
+    }
+
+
     getProperty(id){
         return new Promise(async (resolve, reject) => {
     

@@ -33,6 +33,10 @@ h1, h2, h3, h4{
     background: rgb(240,240,240);
 }
 
+.tile td{
+    padding-right: .5rem;
+}
+
 .tile .btn{
     margin-top: .5rem;
 }
@@ -46,6 +50,15 @@ hr{
 
 .box{
     margin-top: 4rem;
+}
+
+.sub-menu{
+    padding: 0 20px 10px 20px;
+    width: 100%;
+    top: 100%;
+    left: 0;
+    display: none;
+    overflow: hidden;
 }
 
 @media(max-width: 960px) {

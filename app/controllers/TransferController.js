@@ -20,7 +20,7 @@ exports.create = async (req, res) => {
     /** ---------------------------------------------------------------- */
  
 
-    const transfer = new Transfer(req.body);
+    const transfer = new Transfer(req.body, req.session.user._id, req.session.user.username);
     const p_s = await functions.calculate_subkonto(req.session.user._id);
     const backURL = req.header('Referer') || '/dashboard';
 

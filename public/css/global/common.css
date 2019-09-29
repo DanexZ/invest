@@ -208,6 +208,7 @@ table{
 
 .confirmBox p{
     color: #fff;
+    text-align: left;
 }
 
 
@@ -231,7 +232,7 @@ table{
     margin: 0 0 30px;
     padding: 0;
     color: #fff;
-    text-align: center;
+    justify-content: center;
 }
 
 .confirmBox .btn{

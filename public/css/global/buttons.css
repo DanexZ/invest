@@ -4,6 +4,7 @@
     background: #0599dd;;
     color: #fff;
     padding: .4rem .8rem;
+    font-family: Helvetica, sans-serif;
     border-radius: 3px;
     border: 0;
     cursor: pointer; 
@@ -44,10 +45,6 @@
 }
 
 @media (max-width: 770px) {
-    .btn{
-        padding: 8px 14px;
-        font-size: 14px;
-    }
 
     .intro-text{
         top: 8%;

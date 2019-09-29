@@ -17,7 +17,9 @@ exports.login = async function(req, res){
             username: user.data.username,
             password: user.data.password,
             role: user.data.role,
-            status: user.data.status
+            status: user.data.status,
+            account: user.data.account,
+            type: user.data.type
         }
 
         req.session.save(function(){
@@ -54,7 +56,9 @@ exports.register = function(req, res){
             username: user.data.username,
             password: user.data.password,
             role: user.data.role,
-            status: user.data.status
+            status: user.data.status,
+            account: user.data.account,
+            type: user.data.type
         }
         req.session.save(function(e){
             res.redirect('/dashboard');

@@ -1,4 +1,6 @@
 const transfersCollection = require('../../db').db().collection("transfers");
+const Asset = require('./Asset');
+const AssetTransfers = require('./AssetTransfers');
 const ObjectID = require('mongodb').ObjectID;
 const moment = require('moment');
 const timezone = require('moment-timezone');
@@ -6,8 +8,10 @@ const User = require('./User');
 const Pool = require('./Pool');
 
 class Transfer{
-    constructor(data){
+    constructor(data, author_id, author_username){
         this.data = data;
+        this.author_id = author_id;
+        this.author_username = author_username;
         this.errors = [];
     }
 
@@ -21,15 +25,21 @@ class Transfer{
             this.errors.push('Wykryto potencjalną manipulację');
         }
 
-        if((typeof(this.data.title) != 'string') || typeof(this.data.author_username) != 'string' || typeof(this.data.recipient_username) != 'string'){
+        if((typeof(this.data.title) != 'string') || typeof(this.author_username) != 'string' || typeof(this.data.recipient_username) != 'string'){
             this.errors.push("Wykryto manipulację");
         }
 
 
+        if(this.data.asset_id){
+            this.asset_id = ObjectID(this.data.asset_id);
+            this.termin = this.data.termin;
+        }
+
+
         this.data = {
-            author_id: ObjectID(this.data.author_id),
+            author_id: ObjectID(this.author_id),
             recipient_id: ObjectID(this.data.recipient_id),
-            author_username: this.data.author_username,
+            author_username: this.author_username,
             recipient_username: this.data.recipient_username,
             amount: this.data.amount,
             title: this.data.title,
@@ -84,10 +94,10 @@ class Transfer{
 
 
 
-    create(author_subkonto=null){
+    create(author_subkonto){
         return new Promise( async (resolve, reject) => {
 
-            if(author_subkonto && author_subkonto < this.data.amount){
+            if(author_subkonto < this.data.amount){
                 this.errors.push('Nie masz wystarczających środków na subkoncie do tej operacji');
             }
 
@@ -133,18 +143,51 @@ class Transfer{
             this.cleanUp();
             this.validate();
 
+            //nie można wpłacić więcej na dany period niż wynosi rent
+            const data = {
+                asset_id: this.asset_id,
+                client_id: this.data.author_id,
+                amount: this.data.amount,
+                period: this.termin,
+                created_at: this.data.created_at
+            }
+            const assetTransfers = new AssetTransfers(data);
+            
+            if(this.asset_id){
+
+                let asset = new Asset();
+                asset = await asset.getAsset(this.asset_id);
+                
+                const userAssetTransfers = await assetTransfers.specyfic(ObjectID(this.asset_id), ObjectID(this.author_id));
+
+                const period = this.termin;
+
+                let sum = 0;
+                if(period){
+                    for(let i=0; i<userAssetTransfers.length; i++){
+                        if(userAssetTransfers[i].period == period){
+                            sum += userAssetTransfers[i].amount;
+                        }
+                    }
+                }
+
+                if(sum + this.data.amount > asset.rent){
+                    this.errors.push('Kwota przekracza wartość wpłat na dany okres rozliczeniowy');
+                }
+
+            }
+
             if(!this.errors.length){
 
-                transfersCollection.insertOne(this.data)
+                const info = await transfersCollection.insertOne(this.data);
+                const transfer_id = info.ops[0]._id;
 
-                .then(function(info){
-                    resolve(info.ops[0]._id);
-                })
-                .catch(function(){
-                    this.errors.push("Please try later");
-                    reject(this.errors);
-                });
-                
+                if(this.asset_id){
+
+                    const id = assetTransfers.create(transfer_id);
+                    resolve(id);
+                }
+
             } else {
                 reject(this.errors);
             }
@@ -212,6 +255,17 @@ class Transfer{
             ];
 
             const transfers = await this.reusableTransferQuery(params);
+
+            resolve(transfers);
+        });
+    }
+
+
+
+    all(){
+        return new Promise(async (resolve, reject) => {
+
+            const transfers = await transfersCollection.find().toArray();
 
             resolve(transfers);
         });

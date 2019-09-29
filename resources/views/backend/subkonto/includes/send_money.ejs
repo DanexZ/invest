@@ -14,8 +14,6 @@
         <label for="title">Tytuł</label>
         <textarea name="title" id="title" cols="30" rows="2" required></textarea>
 
-        <input type="hidden" id="author_id" name="author_id" value="<%= user._id %>">
-        <input type="hidden" name="author_username" value="<%= user.username %>">
         <input type="hidden" id="password" name="password">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 

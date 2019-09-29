@@ -18,8 +18,8 @@ class UmowaNajmu{
         this.rent = document.querySelector('#rent' + this.id);
         this.deposit = document.querySelector('#deposit' + this.id);
         this.termin = document.querySelector('#termin' + this.id);
-        this.bezterminowo = document.querySelector('#bezterminowo' + this.id);
-        this.place = document.querySelector('#place' + this.id);
+        //this.bezterminowo = document.querySelector('#bezterminowo' + this.id);
+        //this.place = document.querySelector('#place' + this.id);
         //Parametry lokalu
         this.city = document.querySelector('#city' + this.id);
         this.postcode = document.querySelector('#postcode' + this.id);
@@ -39,11 +39,10 @@ class UmowaNajmu{
         this.owner_name = document.querySelector('#owner_name' + this.id);
         this.owner_surname = document.querySelector('#owner_surname' + this.id);
         this.owner_account = document.querySelector('#owner_account' + this.id);
-        this.owner_account.previousValue = '';
         //Tenant
         this.tenant_name = document.querySelector('#tenant_name' + this.id);
         this.tenant_surname = document.querySelector('#tenant_surname' + this.id);
-        this.birthday = document.querySelector('#birthday' + this.id);
+        //this.birthday = document.querySelector('#birthday' + this.id);
         this.id_card = document.querySelector('#id_card' + this.id);
         this.pesel = document.querySelector('#pesel' + this.id);
         this.phone_nr = document.querySelector('#phone_nr' + this.id);
@@ -57,14 +56,14 @@ class UmowaNajmu{
 
 
         if(this.basement.value == 'przynalezna'){
-            basement_paragraph = 'Zgodnie z wpisem do KW piwnica ma charakter pomieszczenia przynależnego, opłaty zaś wynikające z regulaminu rozliczania kosztów gospodarowania zasobami mieszkaniowymi oraz ustalania opłat za użytkowanie lokali Spółdzielni Mieszkaniowej ' + this.spoldzielnia_name.value + ' są już wliczone w kwotę czynszu, o którym mowa w ';
+            basement_paragraph = 'Zgodnie z wpisem do KW piwnica ma charakter pomieszczenia przynależnego, opłaty zaś wynikające z regulaminu rozliczania kosztów gospodarowania zasobami mieszkaniowymi oraz ustalania opłat za użytkowanie lokali Spółdzielni Mieszkaniowej ' + this.spoldzielnia_name.value + ' są już wliczone w kwotę czynszu, o którym mowa w pkt 1 §4';
         } else {
-            basement_paragraph = 'Zgodnie z wpisem do KW piwnica ma charakter powierzchni współdzielonej, opłaty zaś są już w liczone w kwotę czynszu, którym mowa w ';
+            basement_paragraph = 'Zgodnie z wpisem do KW piwnica ma charakter powierzchni współdzielonej, opłaty zaś są już w liczone w kwotę czynszu, o którym mowa w pkt 1 §4.';
         }
 
-        if(this.bezterminowo.checked){
+        //if(this.bezterminowo.checked){
             termin_paragraph = 'Umowa najmu lokalu mieszkalnego zostaje zawarta na czas nieokreślony';
-        }
+        //}
 
     
         /** obliczenie ewentualnych odsetek karnych */
@@ -74,10 +73,38 @@ class UmowaNajmu{
         const owner_account = formatAccount(this.owner_account.value);
         /** =============================== */
 
+        /** Data urodzenia i płeć na podstawie pesel */
+        let aInt = new Array();
+
+        for (let i=0; i<11; i++){
+            aInt[i] = parseInt(this.pesel.value.substring(i,i+1));
+        }
+
+        let year = 1900+aInt[0]*10+aInt[1];
+
+        if (aInt[2]>=2 && aInt[2]<8){
+            year+=Math.floor(aInt[2]/2)*100;
+        }
+            
+        if (aInt[2]>=8){
+            year-=100;
+        }
+
+        let month = (aInt[2]%2)*10+aInt[3];
+        let day = aInt[4]*10+aInt[5];
+
+        if(month < 10) month = '0'+month;
+        if(day < 10 ) day = '0'+day;
+
+        const birthday = day+'-'+month+'-'+year;
+        /** ================================ */
+
+        const plec = (aInt[9]%2==1)?"M":"K";
+            
         const data = {
             rent: parseFloat(this.rent.value).toFixed(2),
-            deposit: this.deposit.value,
-            place: this.place.value,
+            deposit: this.deposit.value.toFixed(2),
+            place: 'Bolesławiec',
 
             city: this.city.value,
             postcode: this.postcode.value,
@@ -100,11 +127,11 @@ class UmowaNajmu{
             tenant_name: this.tenant_name.value,
             tenant_surname: this.tenant_surname.value,
             id_card: this.id_card.value,
-            birthday: this.birthday.value, 
+            birthday: birthday, 
             pesel: this.pesel.value,
             phone_nr: this.phone_nr.value,
             email: this.email.value,
-            pay_date: currentDate('specyfic_date', this.termin.value),
+            //pay_date: currentDate('specyfic_date', this.termin.value),
             currentDate: current_day,
 
             basement_paragraph: basement_paragraph,
@@ -160,7 +187,7 @@ class UmowaNajmu{
                 ]},
                 {text: [
                     `Adres poczty elektronicznej: `,
-                    {text: `${data.email}\n`, bold: true}
+                    {text: `${data.email}\n\n`, bold: true}
                 ]},
 
                 {text: '(dane Najemcy)\n\n', style: 'h3'},
@@ -283,6 +310,9 @@ class UmowaNajmu{
                 account: {
                     alignment: 'center',
                     bold: true
+                },
+                defaultStyle: {
+                    fontSize: 10
                 }
             }
         }

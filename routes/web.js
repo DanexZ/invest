@@ -8,6 +8,7 @@ const PoolController = require('../app/controllers/PoolController');
 const TransferController = require('../app/controllers/TransferController');
 const CommentController = require('../app/controllers/CommentController');
 const AssetController = require('../app/controllers/AssetController');
+const AssetClientController = require('../app/controllers/AssetClientController');
 const OrderController = require('../app/controllers/OrderController');
 
 router.get('/', FrontendController.home);
@@ -65,6 +66,9 @@ router.get('/dashboard/assets/properties', UserController.mustBeLoggedIn, Backen
 router.get('/dashboard/assets/property/:id', UserController.mustBeLoggedIn, BackendController.get_property);
 router.get('/dashboard/asset/:id/incomes', UserController.mustBeLoggedIn, BackendController.asset_incomes);
 router.post('/dashboard/asset/create', UserController.mustBeLoggedIn, AssetController.create);
+
+// ASSET_CLIENT
+router.post('/dashboard/asset_client', UserController.mustBeLoggedIn, AssetClientController.update);
 
 // SUBKONTO
 router.get('/dashboard/subkonto', UserController.mustBeLoggedIn, BackendController.subkonto);

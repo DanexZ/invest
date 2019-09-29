@@ -4,11 +4,16 @@ const Pool = require('../models/Pool');
 const Asset = require('../models/Asset');
 const User = require('../models/User');
 const Order = require('../models/Order');
+const AssetClient = require('../models/AssetClient');
+const AssetTransfers = require('../models/AssetTransfers');
 const Functions = require('../Functions');
 
 const functions = new Functions();
 
 exports.index = async (req, res) => {
+
+    const userNextPayments = await functions.userNextPayments(req.session.user._id);
+
 
     const p_s = await functions.calculate_subkonto(req.session.user._id);
 
@@ -52,6 +57,7 @@ exports.index = async (req, res) => {
 
     res.render('backend/index', {
         user: req.session.user,
+        userNextPayments: userNextPayments,
         payments: p_s.payments
     });
 }
@@ -490,13 +496,17 @@ exports.admin_pools_create = async (req, res) => {
 exports.admin_users = async (req, res) => {
 
     const user = new User();
-    const users = await user.getUsers();
+    let users = await user.getUsers();
+
+    users = await functions.usersNextPayments(users);
+
+    console.log(users);
 
     /** Aktualizuję subkonto */
     const p_s = await functions.calculate_subkonto(req.session.user._id);
     req.session.user.subkonto = p_s.subkonto;
 
-    res.render('backend/admin/users',{
+    res.render('backend/admin/users', {
         user: req.session.user,
         users: users,
         page: 'admin_users'
@@ -539,6 +549,17 @@ exports.admin_assets = async (req, res) => {
 exports.admin_orders = async (req, res) => {
     const order = new Order();
     const orders = await order.all();
+
+    const asset = new Asset();
+    const assets = await asset.all();
+
+    for(let i=0; i<orders.length; i++){
+        for(let m=0; m<assets.length; m++){
+            if(assets[m]._id.equals(orders[i].orderable_id)){
+                orders[i].asset = assets[m];
+            }
+        }
+    }
 
     console.log(orders);
 
@@ -616,11 +637,69 @@ exports.subkonto_send_money = async (req, res) => {
 
 exports.my_products = async (req, res) => {
 
+    //produkty klienta na podstawie AssetClient
+    const assetClient = new AssetClient();
+    const userAssets = await assetClient.getUserRows(req.session.user._id);
+
+    const asset = new Asset();
+    const assets = await asset.all();
+
+    let userProducts = [];
+
+    for(let i=0; i<assets.length; i++){
+        for(let m=0; m<userAssets.length; m++){
+            if(assets[i]._id.equals(userAssets[m].asset_id)){
+                userProducts.push(assets[i]);
+            }
+        }
+    }
+
+    /** ========================================== */
+
+    // płatności za produkty
+    const userNextPayments = await functions.userNextPayments(req.session.user._id);
+    for(let i=0; i<userProducts.length; i++){
+        for(let m=0; m<userNextPayments.length; m++){
+            if(userProducts[i]._id.equals(userNextPayments[m].asset_id)){
+                userProducts[i].nextPayment = userNextPayments[m];
+            }
+        }
+    }
+    /** =========================================== */
+
+    /** ------ */
+    const transfer = new Transfer();
+    const transfers = await transfer.getAuthorTransfers(req.session.user._id);
+    const assetTransfers = new AssetTransfers();
+    const userAssetTransfers = await assetTransfers.userAssetTransfers(req.session.user._id);
+
+    for(let i=0; i<userProducts.length; i++){
+        userProducts[i].transfers = [];
+    }
+
+    for(let i=0; i<userProducts.length; i++){
+        for(let m=0; m<userAssetTransfers.length; m++){
+            if(userAssetTransfers[m].asset_id.equals(userProducts[i]._id)){
+                const transfer_id = userAssetTransfers[m].transfer_id;
+
+                for(let n=0; n<transfers.length; n++){
+                    if(transfers[n]._id.equals(transfer_id)){
+                        userProducts[i].transfers.push(transfers[n]);
+                    }
+                }
+            }
+        }
+    }
+    /** ------ */
+
+    console.log(userProducts);
+
     const p_s = await functions.calculate_subkonto(req.session.user._id);
     req.session.user.subkonto = p_s.subkonto;
 
     res.render('backend/products/my-products', {
         user: req.session.user,
+        userProducts: userProducts,
         page: 'my_products'
     });
 }
