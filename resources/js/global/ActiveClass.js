@@ -23,6 +23,8 @@ class ActiveClass{
         } else if(this.page == 'admin_pools_create'){
             document.querySelector('#admin_pools_li').classList.add('active');
             document.querySelector('#admin_pools_create_li').classList.add('active');
+        } else if(this.page == 'assets'){
+            document.querySelector('#assets_li').classList.add('active');
         } else if(this.page == 'properties'){
             document.querySelector('#properties_li').classList.add('active');
         } else if(this.page == 'machines'){
@@ -37,6 +39,20 @@ class ActiveClass{
             document.querySelector('#password_li').classList.add('active');
         } else if(this.page == 'account_documents'){
             document.querySelector('#account_documents_li').classList.add('active');
+        } else if(this.page == 'account_emerytura'){
+            document.querySelector('#emerytura_li').classList.add('active');
+        } else if(this.page == 'information'){
+            document.querySelector('#information_li').classList.add('active');
+        } else if(this.page == 'information_regulamin'){
+            document.querySelector('#information_regulamin_li').classList.add('active');
+        } else if(this.page == 'information_faq'){
+            document.querySelector('#information_faq_li').classList.add('active');
+        } else if(this.page == 'information_mission'){
+            document.querySelector('#information_mission_li').classList.add('active');
+        } else if(this.page == 'money'){
+            document.querySelector('#money_li').classList.add('active');
+        } else if(this.page == 'money_history'){
+            document.querySelector('#money_history_li').classList.add('active');
         }
     }
 }

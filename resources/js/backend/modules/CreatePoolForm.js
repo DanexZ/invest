@@ -25,7 +25,7 @@ class CreatePoolForm{
     calculate(){
 
         //wyliczenie kosztów
-        const tax = this.tax.value * this.rent.value;
+        const tax = this.tax.value * (this.rent.value - this.spoldzielnia.value);
         const commision = (this.rent.value - tax - this.spoldzielnia.value) * this.commision.value;
         const costs = tax + parseFloat(this.spoldzielnia.value) + commision;
 

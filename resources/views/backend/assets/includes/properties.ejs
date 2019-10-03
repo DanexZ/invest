@@ -14,7 +14,7 @@
 
         <% properties.forEach(property => { %>
             <tr>
-                <td><% if(property.type == 'studio') { %> Kawalerka <% } %>  </td>
+                <td><%= property.type %></td>
                 <td><%= property.city %> <%= property.postcode %> <%= property.street %>/<%= property.apartment_nr %></td>
                 <td><a href="/dashboard/asset/<%= property._id %>/incomes"><button class="btn">Zyski</button></a></td>
             </tr>

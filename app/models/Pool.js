@@ -105,6 +105,15 @@ class Pool{
     }
 
 
+    getFinishedPools(){
+        return new Promise(async (resolve, reject) => {
+
+            const pools = await poolsCollection.find({status: 'finished'}).toArray();
+
+            resolve(pools);
+        });
+    }
+
 
     getPoolById(id){
 

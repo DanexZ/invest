@@ -16,9 +16,9 @@
 
         <div class="pools-list-item">
 
-    <% if(product.type == 'studio') { %>
+    <% if(product.type == 'Kawalerka' || product.type == 'Mieszkanie') { %>
 
-            <div>Kawalerka <%= product.street %>/<%= product.apartment_nr %> <%= product.postcode %> <%= product.city %></div>
+            <div><%= product.type %> <%= product.street %>/<%= product.apartment_nr %> <%= product.postcode %> <%= product.city %></div>
             <div>
                 <a href="/dashboard/assets/property/<%= product._id %>">
                     <button class="btn">Zobacz</button>
@@ -30,7 +30,7 @@
 
                     <input type="hidden" id="username" name="recipient_username" value="MoneyU" required>
                     <input type="hidden" id="amount" name="amount" value="<%= product.nextPayment.amount %>" step="0.01" required>
-                    <input type="hidden" name="title" id="title" value="Kawalerka <%= product.street %>/<%= product.apartment_nr %> <%= product.postcode %> <%= product.city %> <%= product.nextPayment.termin %>" required>
+                    <input type="hidden" name="title" id="title" value="<%= product.type %> <%= product.street %>/<%= product.apartment_nr %> <%= product.postcode %> <%= product.city %> <%= product.nextPayment.termin %>" required>
 
                     <input type="hidden" id="password" name="password">
                     <input type="hidden" id="asset_id" name="asset_id"  value="<%= product._id %>">

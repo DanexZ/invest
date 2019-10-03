@@ -12,6 +12,7 @@ class Transfer{
         this.data = data;
         this.author_id = author_id;
         this.author_username = author_username;
+        this.created_at = moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss');
         this.errors = [];
     }
 
@@ -31,8 +32,13 @@ class Transfer{
 
 
         if(this.data.asset_id){
-            this.asset_id = ObjectID(this.data.asset_id);
-            this.termin = this.data.termin;
+            this.data2 = {
+                asset_id: ObjectID(this.data.asset_id),
+                client_id: ObjectID(this.author_id),
+                amount: this.data.amount,
+                period: this.data.termin,
+                created_at: this.created_at
+            }
         }
 
 
@@ -43,7 +49,7 @@ class Transfer{
             recipient_username: this.data.recipient_username,
             amount: this.data.amount,
             title: this.data.title,
-            created_at: moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss')
+            created_at: this.created_at
         }
     }
 
@@ -64,6 +70,16 @@ class Transfer{
         if(this.data.title.length < 1 || !someText){
             this.errors.push('Oznacz swój transfer wpisując tytuł');
         }
+    }
+
+
+
+
+    createIncomesTransfers(transfers){
+        return new Promise(async (resolve, reject) => {
+            const x = await transfersCollection.insertMany(transfers);
+            resolve(x.insertedIds);
+        });
     }
     
 
@@ -142,50 +158,46 @@ class Transfer{
 
             this.cleanUp();
             this.validate();
-
-            //nie można wpłacić więcej na dany period niż wynosi rent
-            const data = {
-                asset_id: this.asset_id,
-                client_id: this.data.author_id,
-                amount: this.data.amount,
-                period: this.termin,
-                created_at: this.data.created_at
-            }
-            const assetTransfers = new AssetTransfers(data);
             
-            if(this.asset_id){
+            if(!this.errors.length){
 
-                let asset = new Asset();
-                asset = await asset.getAsset(this.asset_id);
-                
-                const userAssetTransfers = await assetTransfers.specyfic(ObjectID(this.asset_id), ObjectID(this.author_id));
+                //nie można wpłacić więcej na dany period niż wynosi rent
 
-                const period = this.termin;
+                const assetTransfers = new AssetTransfers(this.data2);
 
-                let sum = 0;
-                if(period){
-                    for(let i=0; i<userAssetTransfers.length; i++){
-                        if(userAssetTransfers[i].period == period){
-                            sum += userAssetTransfers[i].amount;
+                if(this.data2){
+
+                    let asset = new Asset();
+                    asset = await asset.getAsset(this.data2.asset_id);
+                    
+                    const userAssetTransfers = await assetTransfers.specyfic(ObjectID(this.data2.asset_id), ObjectID(this.data2.author_id));
+    
+                    const period = this.termin;
+    
+                    let sum = 0;
+                    if(period){
+                        for(let i=0; i<userAssetTransfers.length; i++){
+                            if(userAssetTransfers[i].period == period){
+                                sum += userAssetTransfers[i].amount;
+                            }
                         }
                     }
+    
+                    if(sum + this.data.amount > asset.rent){
+                        this.errors.push('Kwota przekracza wartość wpłat na dany okres rozliczeniowy');
+                    }
+    
                 }
-
-                if(sum + this.data.amount > asset.rent){
-                    this.errors.push('Kwota przekracza wartość wpłat na dany okres rozliczeniowy');
-                }
-
-            }
-
-            if(!this.errors.length){
 
                 const info = await transfersCollection.insertOne(this.data);
                 const transfer_id = info.ops[0]._id;
 
-                if(this.asset_id){
+                if(this.data2){
 
-                    const id = assetTransfers.create(transfer_id);
+                    const id = await assetTransfers.create(transfer_id);
                     resolve(id);
+                } else {
+                    resolve(transfer_id);
                 }
 
             } else {

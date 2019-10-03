@@ -5,6 +5,8 @@
 
 <div class="box">
 
+    <h4>Zamówienia o statusie new</h4>
+
     <% if(orders.length) { %>
 
         <div class="pools-list" >
@@ -17,7 +19,9 @@
                 <div>Przydziel</div>
             </div>
 
-        <%   orders.forEach(order => { %>
+        <%   orders.forEach(order => {
+            
+            if(order.status == 'new') { %>
 
                 <div class="pools-list-item">
                     <div>
@@ -72,6 +76,9 @@
                         <form action="/dashboard/asset_client" method="POST">
                             <input type="hidden" name="asset_id" value="<%= order.orderable_id %>">
                             <input type="hidden" name="client_id" value="<%= order.author._id %>">
+                            <input type="hidden" name="order_id" value="<%= order._id %>">
+                            <input type="hidden" name="status" value="pending">
+                            <input type="hidden" name="type" value="<%= order.asset.type %>">
 
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <button class="btn">Przydziel</button>
@@ -79,7 +86,7 @@
                     </div>
                 </div>
                 
-    <%      }); %>
+    <%   }   }); %>
 
         </div>
 

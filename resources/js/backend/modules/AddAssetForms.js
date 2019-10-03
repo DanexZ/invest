@@ -12,7 +12,7 @@ class AddAssetForms{
         this.selectInput.addEventListener('change', e => {
             const value = e.target.value;
 
-            if(value == 'studio'){
+            if(value == 'Kawalerka' || value == 'Mieszkanie'){
                 this.kawalerkaForm(value);
             }
 
@@ -30,6 +30,9 @@ class AddAssetForms{
 
                 <label for="rent">Ustaw czynsz</label>
                 <input id="rent" type="number" name="rent" min="0" step="0.01" required>
+
+                <label for="static_costs">Statyczne koszty (czynsz spółdzielni)</label>
+                <input id="static_costs" type="number" name="static_costs" min="0" step="0.01" required>
 
                 <label for="deposit">Kaucja</label>
                 <input id="deposit" type="number" name="deposit" min="0" step="0.01" required>

@@ -28,10 +28,10 @@
                         <td>Zysk miesięczny po kosztach:</td><td class="money"><%= currentPool.profit_netto %></td>
                     </tr>
                     <tr>
-                        <td>Rentowność roczna:</td><td><%= currentPool.profitability %>%</td>
+                        <td>Rentowność roczna:</td><td>~<%= currentPool.profitability %>%</td>
                     </tr>
                     <tr>
-                        <td>Rentowność miesięczna:</td><td><%= (currentPool.profitability/12).toFixed(2) %>%</td>
+                        <td>Rentowność miesięczna:</td><td>~<%= (currentPool.profitability/12).toFixed(2) %>%</td>
                     </tr>
                     <tr>
                         <td>Liczba inwestorów:</td><td><%= currentPool.shareholders.length %></td>

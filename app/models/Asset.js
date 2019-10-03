@@ -13,12 +13,18 @@ class Asset{
 
     cleanUp(){
 
-        if(this.data.type == 'studio'){
+        if(this.data.type == 'Kawalerka' || this.data.type == 'Mieszkanie'){
+
+            let state = 'wolne';
+            if(this.data.type == 'Kawalerka'){
+                state = 'wolna';
+            }
 
             this.data = {
                 type: this.data.type,
                 purchase: parseFloat(this.data.purchase),
                 rent: parseFloat(this.data.rent),
+                static_costs: parseFloat(this.data.static_costs),
                 deposit: this.data.deposit,
                 meters: parseFloat(this.data.meters),
                 register_nr: this.data.register_nr,
@@ -39,7 +45,7 @@ class Asset{
                     this.data.details.trim(),
                     { allowedTags: ['strong', 'p', 'div', 'br'], allowedAttributes: {} }
                 ),
-                state: 'wolna',
+                state: state,
                 created_at: moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss')
             }
         }
@@ -55,7 +61,7 @@ class Asset{
 
                 assetsCollection.insertOne(this.data)
                 .then(function(info){
-                    resolve(info.ops[0]._id);
+                    resolve({ asset_id: info.ops[0]._id, static_costs: info.ops[0].static_costs, created_at: info.ops[0].created_at});
                 })
                 .catch(function(){
                     this.errors.push("Please try later");
@@ -73,11 +79,14 @@ class Asset{
     getStudios(){
         return new Promise(async (resolve, reject) => {
 
-            const studios = await assetsCollection.find({ type: 'studio' }).toArray();
+            const studios = await assetsCollection.find({ type: 'Kawalerka' }).toArray();
 
             resolve(studios);
         });
     }
+
+
+
 
 
     all(){
@@ -107,7 +116,9 @@ class Asset{
 
     getProperties(){
         return new Promise(async (resolve, reject) => {
-            const properties = await this.getStudios();
+            const studios = await assetsCollection.find({ type: 'Kawalerka' }).toArray();
+            const flats = await assetsCollection.find({ type: 'Mieszkanie'}).toArray();
+            const properties = studios.concat(flats);
 
             resolve(properties);
         });
@@ -127,6 +138,20 @@ class Asset{
                  resolve(false);
              }
          });
+    }
+
+
+    updateState(asset_id, state){
+        return new Promise(async (resolve, reject) => {
+
+            await assetsCollection.findOneAndUpdate(
+                { _id: ObjectID(asset_id) },
+                { $set: { state: state }  }
+            );
+
+            resolve('success');
+
+        });
     }
 }
 

@@ -1,0 +1,16 @@
+.transferDate{
+    font-size: 70%;
+    color: rgb(100,100,100);
+}
+
+.income_table tr:nth-child(1){
+    background: rgba(100, 162, 86, .2);
+}
+
+.income_table th{
+    padding: .4rem;
+}
+
+.income_table .column{
+    text-align: center;
+}

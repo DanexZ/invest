@@ -1,0 +1,34 @@
+<h3>Historia okresów rozliczeniowych</h3>
+<hr>
+
+<div class="box">
+
+    <% if(billingPeriods.length) { %>
+
+        <div class="pools-list" >
+
+            <div class="pools-list-header">
+                <div>Okres</div>
+            </div>
+
+        <%   billingPeriods.forEach(billingPeriod => { %>
+
+                <a href="/dashboard/money/billingPeriod/<%= billingPeriod.period.startingDate %>">
+                    <div class="pools-list-item">
+                        <div>
+                            <%= billingPeriod.period.startingDate %> | <%= billingPeriod.period.endingDate %>
+                        </div>
+                    </div>
+                </a>
+                
+        <%   }); %>
+
+        </div>
+
+    <% } else { %>
+
+        <h3>Tu jeszcze nic nie ma</h3>
+
+    <% } %>
+
+</div>

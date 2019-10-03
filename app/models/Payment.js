@@ -108,8 +108,6 @@ class Payment{
 
                 params.push({$match: { author_id: author_id } });
             }
-             
-            console.log(params);
 
             const payments = await this.reusablePaymentQuery(params);
 
@@ -172,11 +170,10 @@ class Payment{
         return new Promise(async (resolve, reject) => {
 
             if(!this.errors.length){
-                const x = await paymentsCollection.findOneAndUpdate(
-                    { _id: new ObjectID(id) },
+                await paymentsCollection.findOneAndUpdate(
+                    { _id: ObjectID(id) },
                     { $set: {status: 'verified'} }
                 );
-                console.log(x);
                 resolve('success');
             } else {
                 resolve('failure');

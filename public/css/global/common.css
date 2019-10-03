@@ -139,9 +139,30 @@ hr {
     margin-right: 1rem;
 }
 
+.m-b{
+    margin-bottom: .5rem;
+}
+
 .row{
     display: flex;
     flex-wrap: wrap;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+}
+
+.text-rigth{
+    text-align: right;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.b{
+    font-weight: 700;
 }
 
 p, label{

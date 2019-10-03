@@ -1,0 +1,76 @@
+<h3>Nasze finanse i Twój udział w bierzącym okresie rozliczeniowym</h3>
+<hr>
+
+<div class="box2">
+    <h4>Bieżący okres rozliczeniowy: <strong style="margin-left: .7rem"><%= billing_period.startingDate %></strong><strong style="margin-left: .3rem; margin-right: .3rem">|</strong><strong><%= billing_period.endingDate %></strong></h4>
+    <h4>Twoje udziały: <strong style="margin-left: .7rem"><%= user_percentage*100 %>%</strong></h4>
+
+    <% if(income_object.assets.length) { %>
+
+        <table class="table1 income_table">
+            <tbody>
+                <tr>
+                    <th>Aktywo</th>
+                    <th>Wpływy (br okres)</th>
+                    <th>Koszty</th>
+                    <th>Wpływy sumując</th>
+                    <th>Koszty sumując</th>
+                </tr>
+
+            <% income_object.assets.forEach(asset => { %>
+
+                <tr>
+                    <td><%= asset.asset_name %></td>
+                    <td>
+                        <% asset.incomes.forEach(income => { %>
+                            <div class="column m-b">
+                                <div class="money"><%= income.amount %></div>
+                                <div class="transferDate"><%= income.created_at %></div>
+                            </div>
+                        <% }); %>
+                    </td>
+                    <td>
+                        <% asset.costs.forEach(cost => { %>
+                            <div class="column m-b">
+                                <div>Koszty stałe: <span class="money"><%= cost.static_costs %></span></div>
+                                <div>Podatek: <span class="money"><%= cost.tax %></span></div>
+                                <div>Operator: <span class="money"><%= cost.operator %></span></div>
+                                <div>Razem <span class="money"><%= cost.amount %></span></div>
+                            </div>
+                        <% }) %>
+                    </td>
+                    <td><div class="column money"><%= asset.incomes_sum %></div></td>
+                    <td><div class="column money"><%= asset.costs_sum %></div></td>
+                </tr>
+
+            <% }); %>
+
+            <tr class="b">
+                <td>Total brutto:</td>
+                <td></td>
+                <td></td>
+                <td class="money text-center"><%= income_object.total_brutto %></td>
+            </tr>
+            <tr class="b">
+                <td>Total netto:</td>
+                <td></td>
+                <td></td>
+                <td class="money text-center"><%= income_object.total_netto %></td>
+            </tr>
+            <tr class="b">
+                <td>Twój udział:</td>
+                <td></td>
+                <td></td>
+                <td class="money text-center"><%= Math.floor(income_object.total_netto*user_percentage*100)/100 %></td>
+            </tr>
+
+            </tbody>
+        </table>
+
+    <% } else { %>
+
+        <h4>Nie ma jeszcze żadnych wpływów na ten okresie</h4>
+
+    <% } %>
+</div>
+

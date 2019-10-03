@@ -1,4 +1,7 @@
 const Payment = require('../models/Payment');
+const BillingPeriod = require('../models/BillingPeriod');
+const BillingPeriodTransfers = require('../models/BillingPeriodTransfers');
+const AssetPeriodCosts = require('../models/AssetPeriodCosts');
 const Transfer = require('../models/Transfer');
 const Pool = require('../models/Pool');
 const Asset = require('../models/Asset');
@@ -6,6 +9,9 @@ const User = require('../models/User');
 const Order = require('../models/Order');
 const AssetClient = require('../models/AssetClient');
 const AssetTransfers = require('../models/AssetTransfers');
+const ObjectID = require('mongodb').ObjectID;
+const moment = require('moment');
+const timezone = require('moment-timezone');
 const Functions = require('../Functions');
 
 const functions = new Functions();
@@ -14,8 +20,9 @@ exports.index = async (req, res) => {
 
     const userNextPayments = await functions.userNextPayments(req.session.user._id);
 
-
     const p_s = await functions.calculate_subkonto(req.session.user._id);
+
+    const userAccountValue = await functions.calculate_userAccountValue(req.session.user._id);
 
     req.session.user.subkonto = p_s.subkonto;
 
@@ -58,7 +65,8 @@ exports.index = async (req, res) => {
     res.render('backend/index', {
         user: req.session.user,
         userNextPayments: userNextPayments,
-        payments: p_s.payments
+        payments: p_s.payments,
+        userAccountValue: userAccountValue
     });
 }
 
@@ -100,6 +108,72 @@ exports.user_documents = async (req, res) => {
         user: req.session.user,
         specyficUser: null,
         page: 'account_documents'
+    });
+}
+
+
+exports.user_emerytura = async (req, res) => {
+
+    //muszę wyliczyć średnią rentowność
+    const asset = new Asset();
+    const pool = new Pool();
+    const assets = await asset.all();
+    const finishedPools = await pool.getFinishedPools();
+
+    let profitabilities = [];
+    for(let i=0; i<assets.length; i++){
+        for(let m=0; m<finishedPools.length; m++){
+            if(assets[i].pool_nr == finishedPools[m].nr){
+                const purchase = assets[i].purchase;
+                const rent = assets[i].rent;
+                const static_costs = assets[i].static_costs;
+                const tax = 0.19*(rent - static_costs);
+                const operator_interest = 0.07*(rent - tax - static_costs);
+                const netto = rent - tax - static_costs - operator_interest;
+                const profitability = netto/purchase;
+                profitabilities.push(profitability);
+            }
+        }  
+    }
+
+    let average = 0;
+    for(let i=0; i<profitabilities.length; i++){
+        average += profitabilities[i];
+    }
+
+    average = average/profitabilities.length;
+    /** Mam średnią rentowność wszystkich aktywów */
+    /** Teraz potrzebuję wartość konta użytkownika */
+    const userAccountValue = await functions.calculate_userAccountValue(req.session.user._id);
+    /** Zakładam wiek usera na 25 lat a przejście na emeryturę w wieku 65 z kwotą 2000 */
+    const targetAge = 65;
+    const currentAge = 25;
+    const targetPension = 2000;
+    const months = (targetAge - currentAge)*12;
+    /** Muszę wyliczyć jaki jest potrzebny kapitał */
+    /** capital*average = targetPension */
+    const targetCapital = targetPension/average;
+    const missingCapital = targetCapital - userAccountValue;
+    const monthlyInvest = missingCapital/months;
+
+
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/account/emerytura', {
+        user: req.session.user,
+        specyficUser: null,
+        average: average*100,
+        targetCapital,
+        targetAge: targetAge,
+        targetPension: targetPension,
+        currentAge: currentAge,
+        targetPension: targetPension,
+        missingCapital: missingCapital,
+        userAccountValue: userAccountValue,
+        monthlyInvest: monthlyInvest,
+        months: months,
+        page: 'account_emerytura'
     });
 }
 
@@ -346,14 +420,156 @@ exports.pools_single = async (req, res) => {
 /** END POOLS */
 
 
-// ASSETS
+// MONEY
 
-exports.assets = async (req, res) => {
+exports.money = async (req, res) => {
 
-    res.render('backend/assets/index', {
-        user: req.session.user
+    const currentTime = moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss');
+
+    const billing_period = functions.get_billing_period('2019-10-16');
+
+    const asset = new Asset();
+    const assetTransfers = new AssetTransfers();
+    const billingPeriod = new BillingPeriod();
+    let assetPeriodCosts = new AssetPeriodCosts();
+    const pool = new Pool();
+    const transfer = new Transfer();      
+
+    const period = await billingPeriod.getPeriod(billing_period); //dla billibPeriod._id
+    assetPeriodCosts = await assetPeriodCosts.all();
+    const assets = await asset.all();
+    const assetsTransfers = await assetTransfers.all();
+    const finishedPools = await pool.getFinishedPools();
+    const transfers = await transfer.all();
+
+    //odpowiedni static costs w odpowiednim assecie na dany okres
+    for(let i=0; i<assetPeriodCosts.length; i++){
+        for(let m=0; m<assets.length; m++){
+            if(assetPeriodCosts[i]._id.equals(period._id) && assetPeriodCosts[i].asset_id.equals(asset[m]._id)){
+                transfers[m].static_costs = assetPeriodCosts[i].static_costs;
+            }
+        }
+    }
+    /**! Teraz mam zaktualizowane static_costs w każdym assecie według najnowszego okresu ! */
+    const income_object = functions.calculate_total_netto(assets, assetsTransfers, billing_period);
+    
+
+    //tylko te pools z których zostało sfinansowane i dodane aktywo w danym okresie rozliczeniowym
+    let pools = [];
+    for(let i=0; i<finishedPools.length; i++){
+        for(let m=0; m<assets.length; m++){
+            if(assets[m].pool_nr == finishedPools[i].nr && functions.isDateExistBeforeEndingDate(assets[m].created_at, billing_period)) {
+                pools.push(finishedPools[i]);
+            }
+        }
+    }
+
+    const user_percentage = functions.user_percentage(req.session.user._id, pools, transfers);
+
+
+    /** Aktualizuję subkonto */
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/money/index', {
+        user: req.session.user,
+        income_object: income_object,
+        billing_period: billing_period,
+        user_percentage: user_percentage,
+        page: 'money'
     });
 }
+
+
+exports.money_history = async (req, res) => {
+
+    const billingPeriod = new BillingPeriod();
+    const billingPeriods = await billingPeriod.all();
+
+
+    /** Aktualizuję subkonto */
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/money/history', {
+        user: req.session.user,
+        billingPeriods: billingPeriods,
+        page: 'money_history'
+    });
+}
+
+
+exports.billingPeriod = async (req, res) => {
+
+    const billing_period = functions.get_billing_period(req.params.date);
+
+    const asset = new Asset();
+    const assetTransfers = new AssetTransfers();
+    const billingPeriod = new BillingPeriod();
+    let assetPeriodCosts = new AssetPeriodCosts();
+    const pool = new Pool();
+    const transfer = new Transfer();
+
+    const period = await billingPeriod.getPeriod(billing_period); //dla billibPeriod._id
+    assetPeriodCosts = await assetPeriodCosts.all();
+    const assets = await asset.all();
+    const assetsTransfers = await assetTransfers.all();
+    const finishedPools = await pool.getFinishedPools();
+    const transfers = await transfer.all();
+
+    //odpowiedni static costs w odpowiednim assecie na dany okres
+    for(let i=0; i<assetPeriodCosts.length; i++){
+        for(let m=0; m<assets.length; m++){
+            if(assetPeriodCosts[i]._id.equals(period._id) && assetPeriodCosts[i].asset_id.equals(asset[m]._id)){
+                transfers[m].static_costs = assetPeriodCosts[i].static_costs;
+            }
+        }
+    }
+    /**! Teraz mam zaktualizowane static_costs w każdym assecie według najnowszego okresu ! */
+    const income_object = functions.calculate_total_netto(assets, assetsTransfers, billing_period);
+    
+
+    //tylko te pools z których zostało sfinansowane i dodane aktywo w danym okresie rozliczeniowym
+    let pools = [];
+    for(let i=0; i<finishedPools.length; i++){
+        for(let m=0; m<assets.length; m++){
+            if(assets[m].pool_nr == finishedPools[i].nr && functions.isDateExistBeforeEndingDate(assets[m].created_at, billing_period)) {
+                pools.push(finishedPools[i]);
+            }
+        }
+    }
+
+    const user_percentage = functions.user_percentage(req.session.user._id, pools, transfers);
+
+
+    /** Aktualizuję subkonto */
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/money/specyfic', {
+        user: req.session.user,
+        income_object: income_object,
+        billing_period: billing_period,
+        user_percentage: user_percentage,
+        page: 'money'
+    });
+}
+
+
+// ASSETS
+
+/*exports.assets = async (req, res) => {
+
+    
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/assets/index', {
+        user: req.session.user,
+        
+        page: 'assets'
+    });
+}*/
 
 
 
@@ -401,6 +617,7 @@ exports.get_property = async (req, res) => {
 }
 
 exports.asset_incomes = async (req, res) => {
+
     res.render('backend/assets/incomes', {
         user: req.session.user,
         page: 'incomes'
@@ -448,6 +665,107 @@ exports.admin = async (req, res) => {
 
     /** END CurrentPOOL */
 
+
+    /** Muszę policzyć przysługujące zyski użytkowników (za poprzedni okres rozliczeniowy) */
+    const currentTime = moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss');
+    const previous_billing_period = functions.get_billing_period('2019-11-16', 1);
+
+    const assetTransfers = new AssetTransfers();
+    const asset = new Asset();
+    const user = new User();
+    const transfer = new Transfer();
+    const billingPeriod = new BillingPeriod();
+    const billingPeriodTransfers = new BillingPeriodTransfers();
+
+    const assetsTransfers = await assetTransfers.all();
+    const assets = await asset.all();
+    const users = await user.all();
+    const finishedPools = await pool.getFinishedPools();
+    const transfers = await transfer.all();
+    const moneyu = await user.findUserByUsername('MoneyU');    
+    const period = await billingPeriod.getPeriod(previous_billing_period); //dla period_id
+    const periodTransfers = await billingPeriodTransfers.getForPeriod(period._id);
+
+    //Najpierw muszę policzyć total zysk netto z poprzedniego okresu rozliczeniowego
+    const income_object = functions.calculate_total_netto(assets, assetsTransfers, previous_billing_period);
+    const total_netto = income_object.total_netto;
+
+    //Ok teraz muszę policzyć udziały użytkowników za tamten okres
+
+    //tylko te pools z których zostało sfinansowane i dodane aktywo w danym okresie rozliczeniowym
+    let pools = [];
+    for(let i=0; i<finishedPools.length; i++){
+        for(let m=0; m<assets.length; m++){
+            if(assets[m].pool_nr == finishedPools[i].nr && functions.isDateExistBeforeEndingDate(assets[m].created_at, previous_billing_period)) {
+                pools.push(finishedPools[i]);
+            }
+        }
+    }
+
+    let transfers_array = [];
+    //muszę wykluczyć transfery które zostały już zaznaczone jako wysłane
+
+    for(let i=0; i<users.length; i++){
+        let flag = false;
+        for(let m=0; m<periodTransfers.length; m++){
+            for(let n=0; n<transfers.length; n++){
+
+                if(transfers[n]._id.equals(periodTransfers[m].transfer_id) && transfers[n].recipient_id.equals(users[i]._id)){
+                    flag = true;
+                }
+            }
+
+            if(!flag){
+                const percentage = functions.user_percentage(users[i]._id, pools, transfers);
+                const income = Math.floor(percentage*total_netto*100)/100;
+                const data = {
+                    author_id: ObjectID(moneyu._id),
+                    recipient_id: ObjectID(users[i]._id),
+                    author_username: 'MoneyU',
+                    recipient_username: users[i].username,
+                    amount: parseFloat(income),
+                    title: 'ZYSK za ' + previous_billing_period.startingDate + ' ' + previous_billing_period.endingDate,
+                    created_at: currentTime
+                }
+                if(income){
+                    transfers_array.push(data);
+                }
+            }
+        }
+    }
+
+    if(transfers_array.length){
+        if(req.params.optional == 'send'){
+
+            let transfers_ids = await transfer.createIncomesTransfers(transfers_array);
+            transfers_ids = Object.entries(transfers_ids);
+    
+            const array = [];
+            for(let i=0; i<transfers_ids.length; i++){
+                array.push({
+                    billingPeriod: ObjectID(period._id),
+                    transfer_id: ObjectID(transfers_ids[i][1])
+                });
+            }
+            await billingPeriodTransfers.createMany(array);
+        }
+    }
+
+    
+
+    /** ------------------------------------ */
+
+    for(let i=0; i<transfers_array.length; i++){
+        transfers_array[i].sum = transfers_array[0].amount;
+    }
+
+
+    for(let i=0; i<transfers_array.length; i++){
+        if(i){
+            transfers_array[i].sum = transfers_array[i].amount + transfers_array[i-1].sum;
+        }
+    }
+
     /** Aktualizuję subkonto */
     const p_s = await functions.calculate_subkonto(req.session.user._id);
     req.session.user.subkonto = p_s.subkonto;
@@ -455,8 +773,11 @@ exports.admin = async (req, res) => {
     res.render('backend/admin/index', {
         user: req.session.user,
         pending_payments: pending_payments,
-        currentPool: currentPool
-    })
+        currentPool: currentPool,
+        transfers_array: transfers_array,
+        previous_billing_period: previous_billing_period,
+        total_netto: total_netto
+    });
 }
 
 
@@ -496,11 +817,9 @@ exports.admin_pools_create = async (req, res) => {
 exports.admin_users = async (req, res) => {
 
     const user = new User();
-    let users = await user.getUsers();
+    let users = await user.all();
 
     users = await functions.usersNextPayments(users);
-
-    console.log(users);
 
     /** Aktualizuję subkonto */
     const p_s = await functions.calculate_subkonto(req.session.user._id);
@@ -561,7 +880,6 @@ exports.admin_orders = async (req, res) => {
         }
     }
 
-    console.log(orders);
 
     res.render('backend/admin/orders',{
         user: req.session.user,
@@ -571,6 +889,62 @@ exports.admin_orders = async (req, res) => {
 
 
 /** END ADMIN */
+
+/** INFORMATION */
+
+exports.information = async (req, res) => {
+
+    //podliczenie subkonta pod każdym rootem
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/information/index',{
+        user: req.session.user,
+        page: 'information'
+    });
+}
+
+
+exports.information_regulamin = async (req, res) => {
+
+    //podliczenie subkonta pod każdym rootem
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/information/regulamin',{
+        user: req.session.user,
+        page: 'information_regulamin'
+    });
+}
+
+
+exports.information_faq = async (req, res) => {
+
+    //podliczenie subkonta pod każdym rootem
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/information/faq',{
+        user: req.session.user,
+        page: 'information_faq'
+    });
+}
+
+
+exports.information_mission = async (req, res) => {
+
+    //podliczenie subkonta pod każdym rootem
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/information/mission',{
+        user: req.session.user,
+        page: 'information_mission'
+    });
+}
+
+
+/** END INFORMATION */
 
 //SUBKONTO
 
@@ -692,8 +1066,6 @@ exports.my_products = async (req, res) => {
     }
     /** ------ */
 
-    console.log(userProducts);
-
     const p_s = await functions.calculate_subkonto(req.session.user._id);
     req.session.user.subkonto = p_s.subkonto;
 
@@ -758,6 +1130,18 @@ exports.orders = async (req, res) => {
         orders: orders,
         page: 'orders'
     });
+}
+
+
+
+exports.getPeriod = async (req, res) => {
+
+    let billingPeriod = new BillingPeriod();
+    const period = functions.get_billing_period();
+
+    billingPeriod = await billingPeriod.getPeriod(period);
+
+    res.send(billingPeriod.period.startingDate);
 }
 
 

@@ -22,6 +22,10 @@ router.post('/doesEmailExist', UserController.doesEmailExist);
 router.post('/edit', UserController.mustBeLoggedIn, UserController.edit);
 router.post('/dashboard/changePassword', UserController.mustBeLoggedIn, UserController.changePassword);
 
+// BILLING PERIODS  
+router.get('/makeBillingPeriod', FrontendController.makeBillingPeriod);
+router.get('/dashboard/period', UserController.mustBeLoggedIn, BackendController.getPeriod);
+
 // BACKEND ROUTES
 
 router.get('/dashboard', UserController.mustBeLoggedIn, BackendController.index);
@@ -30,9 +34,10 @@ router.get('/dashboard', UserController.mustBeLoggedIn, BackendController.index)
 router.get('/dashboard/account/:username', UserController.mustBeLoggedIn, UserController.access,BackendController.user_account);
 router.get('/dashboard/password', UserController.mustBeLoggedIn, BackendController.user_password);
 router.get('/dashboard/documents', UserController.mustBeLoggedIn, BackendController.user_documents);
+router.get('/dashboard/emerytura', UserController.mustBeLoggedIn, BackendController.user_emerytura);
 
 // ADMIN ROUTES
-router.get('/dashboard/admin', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin);
+router.get('/dashboard/admin/:optional', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin);
 router.get('/dashboard/admin/orders', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin_orders);
 router.get('/dashboard/admin/pools', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin_pools);
 router.get('/dashboard/admin/pools_create', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin_pools_create);
@@ -40,6 +45,11 @@ router.get('/dashboard/admin/assets', UserController.mustBeLoggedIn, UserControl
 router.get('/dashboard/admin/users', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin_users);
 router.get('/dashboard/admin/asset/:id', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin_asset);
 
+// INFORMATION
+router.get('/dashboard/information', UserController.mustBeLoggedIn, BackendController.information);
+router.get('/dashboard/information/regulamin', UserController.mustBeLoggedIn, BackendController.information_regulamin);
+router.get('/dashboard/information/faq', UserController.mustBeLoggedIn, BackendController.information_faq);
+router.get('/dashboard/information/mission', UserController.mustBeLoggedIn, BackendController.information_mission);
 
 // PAYMENTS
 router.post('/payment/create', UserController.mustBeLoggedIn, PaymentController.create);
@@ -61,11 +71,18 @@ router.get('/dashboard/pools', UserController.mustBeLoggedIn, BackendController.
 router.get('/dashboard/pools/history', UserController.mustBeLoggedIn, BackendController.pools_history);
 router.get('/dashboard/pool/:id', UserController.mustBeLoggedIn, BackendController.pools_single);
 
+// MONEY
+router.get('/dashboard/money' , UserController.mustBeLoggedIn, BackendController.money);
+router.get('/dashboard/money/history', UserController.mustBeLoggedIn, BackendController.money_history);
+router.get('/dashboard/money/billingPeriod/:date', UserController.mustBeLoggedIn, BackendController.billingPeriod);
+
 // ASSETS
+//router.get('/dashboard/assets', UserController.mustBeLoggedIn, BackendController.assets);
 router.get('/dashboard/assets/properties', UserController.mustBeLoggedIn, BackendController.assets_properties);
 router.get('/dashboard/assets/property/:id', UserController.mustBeLoggedIn, BackendController.get_property);
 router.get('/dashboard/asset/:id/incomes', UserController.mustBeLoggedIn, BackendController.asset_incomes);
 router.post('/dashboard/asset/create', UserController.mustBeLoggedIn, AssetController.create);
+
 
 // ASSET_CLIENT
 router.post('/dashboard/asset_client', UserController.mustBeLoggedIn, AssetClientController.update);

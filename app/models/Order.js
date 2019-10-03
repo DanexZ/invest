@@ -100,6 +100,17 @@ class Order{
     }
 
 
+
+    update(order_id, status){
+        return new Promise(async (resolve, reject) => {
+            await ordersCollection.findOneAndUpdate(
+                { _id: ObjectID(order_id) },
+                { $set: {status: status} }
+            );
+            resolve('success');
+        });
+    }
+
 }
 
 module.exports = Order

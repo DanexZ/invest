@@ -2,6 +2,46 @@
 
 <%- include('../../../frontend/includes/flash.ejs') %>
 
+
+
+
+<% if(transfers_array.length) { %>
+
+<div class="box2">
+
+    <h4>Istnieją następujące zyski do wysłania za okres <strong style="margin-left: .7rem"><%= previous_billing_period.startingDate %></strong><strong style="margin-left: .3rem; margin-right: .3rem">|</strong><strong><%= previous_billing_period.endingDate %></strong></h4>
+
+    <table class="table1 income_table">
+        <tbody>
+            <tr>
+                <th>Nick</th>
+                <th>Kwota</th>
+                <th>Zyski sumując</th>
+            </tr>
+
+            <% transfers_array.forEach(transfer => { %>
+            
+                <tr>
+                    <td class="text-center"><%= transfer.recipient_username %></td>
+                    <td class="text-center money"><%= transfer.amount %></td>
+                    <td class="text-center b money"><%= transfer.sum %></td>
+                </tr>
+
+            <% }); %>
+
+        </tbody>
+    </table>
+
+    <h4>Wypracowany zysk netto za tamten okres to: <span style="margin-left: .7rem" class="b money"><%= total_netto %></span></h4>
+
+    <a href="/dashboard/admin/send">
+        <button class="btn" style="margin-top: .5rem">Roześlij</button>
+    </a>
+
+</div>
+<% } %>
+
+
 <div id="admin">
 
 <% if(currentPool) {

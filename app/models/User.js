@@ -279,7 +279,7 @@ class User{
 
 
 
-    getUsers(){
+    all(){
         return new Promise(async (resolve, reject) => {
 
             const users = await usersCollection.find().toArray();
