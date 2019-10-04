@@ -99,8 +99,17 @@ router.get('/dashboard/my-products', UserController.mustBeLoggedIn, BackendContr
 router.get('/dashboard/products/property/:id', UserController.mustBeLoggedIn, BackendController.products_property);
 router.get('/dashboard/products/properties', UserController.mustBeLoggedIn, BackendController.products_properties);
 
-//ORDERS
+// ORDERS
 router.get('/dashboard/orders', UserController.mustBeLoggedIn, BackendController.orders);
 router.post('/order/create/:id/:type', UserController.mustBeLoggedIn, OrderController.create);
+
+// LOANS
+router.get('/dashboard/loans', UserController.mustBeLoggedIn, BackendController.loans);
+
+// Messages
+router.get('/dashboard/messages', UserController.mustBeLoggedIn, BackendController.messages);
+
+// FORUM
+router.get('/dashboard/forum', UserController.mustBeLoggedIn, BackendController.forum);
 
 module.exports = router;

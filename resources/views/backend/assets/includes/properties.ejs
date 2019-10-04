@@ -9,14 +9,14 @@
                 <tr>
                     <th>Typ</th>
                     <th>Adres</th>
-                    <th>Historia zysków</th>
+                    <th>Lista wpływów (brutto)</th>
                 </tr>
 
         <% properties.forEach(property => { %>
             <tr>
                 <td><%= property.type %></td>
                 <td><%= property.city %> <%= property.postcode %> <%= property.street %>/<%= property.apartment_nr %></td>
-                <td><a href="/dashboard/asset/<%= property._id %>/incomes"><button class="btn">Zyski</button></a></td>
+                <td><a href="/dashboard/asset/<%= property._id %>/incomes"><button class="btn">Wpływy</button></a></td>
             </tr>
         <% }) %>
 

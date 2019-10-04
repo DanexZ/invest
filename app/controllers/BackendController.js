@@ -780,8 +780,17 @@ exports.get_property = async (req, res) => {
 
 exports.asset_incomes = async (req, res) => {
 
+    let assetTransfers = new AssetTransfers();
+    assetTransfers = await assetTransfers.ofAsset(req.params.id);
+
+
+    /** Aktualizuję subkonto */
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
     res.render('backend/assets/incomes', {
         user: req.session.user,
+        assetTransfers: assetTransfers,
         page: 'incomes'
     });
 }
@@ -1320,18 +1329,39 @@ exports.getPeriod = async (req, res) => {
 }
 
 
-/*exports.studio = async (req, res) => {
-    const asset = new Asset();
-
-    const studio = await asset.getStudio(req.params.id);
+exports.loans = async (req, res) => {
 
     const p_s = await functions.calculate_subkonto(req.session.user._id);
     req.session.user.subkonto = p_s.subkonto;
 
-    res.render('backend/products/studio', {
+    res.render('backend/loans/index', {
         user: req.session.user,
-        studio: studio
+        page: 'loans'
     });
-}*/
+}
+
+
+exports.messages = async (req, res) => {
+    
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/messages/index', {
+        user: req.session.user,
+        page: 'messages'
+    });
+}
+
+
+exports.forum = async (req, res) => {
+    
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/forum/index', {
+        user: req.session.user,
+        page: 'forum'
+    });
+}
 
 

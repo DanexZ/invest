@@ -40,6 +40,19 @@ class AssetTransfers{
     }
 
 
+    ofAsset(asset_id){
+        console.log(asset_id);
+        return new Promise(async (resolve, reject) => {
+
+            const rows = await assetTransfersCollection.find({asset_id: ObjectID(asset_id)}).toArray();
+
+            console.log(rows);
+
+            resolve(rows);
+        });
+    }
+
+
     userAssetTransfers(user_id){
         return new Promise(async (resolve, reject) => {
 

@@ -1,3 +1,30 @@
 <h3><a href="/dashboard/assets/properties"><< Wróć </a></h3>
 
 <h3>Lista zysków tego aktywu</h3>
+
+<div class="box2">
+    <% if(assetTransfers.length) { %>
+
+        <table class="table1 income_table">
+            <tbody>
+                <tr>
+                    <th>Wpływ</th>
+                    <th>Data</th>
+                </tr>
+
+            <% assetTransfers.forEach(transfer => { %>
+
+                <tr>
+                    <td class="b text-center money"><%= transfer.amount %></td>
+                    <td class="text-center">
+                        <%= transfer.created_at %>
+                    </td>
+                </tr>
+
+            <% }); %>
+
+            </tbody>
+        </table>
+
+    <% } %>
+</div>
