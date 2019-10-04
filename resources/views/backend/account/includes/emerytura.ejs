@@ -1,7 +1,15 @@
 <h3>Emerytura</h3>
 <hr>
 
+<%- include('../../../frontend/includes/flash.ejs') %>
+
 <div class="box2">
+    <% if(user.targetPension) { %>
+        <h4>Wyliczenia spersonalizowane</h4>
+    <% } else { %>
+        <h4>Wyliczenia domyślne</h4>
+    <% } %>
+    <hr>
     <h4>Średnia miesięczna rentowność aktywów: <strong style="margin-left: .7rem"><%= average.toFixed(4) %>%</strong></h4>
     <h4>Potrzebujesz zbudować kapitał o wartości: <strong style="margin-left: .7rem" class="money"><%= targetCapital %></strong></h4>
     <h4>Aby wypłacać co miesiąc: <strong style="margin-left: .7rem" class="money"><%= targetPension %></strong></h4>
@@ -12,3 +20,22 @@
     <h4>Pozostało miesięcy: <strong style="margin-left: .7rem"><%= months %></strong></h4>
     <h4>Musisz co miesiąc inwestować: <strong style="margin-left: .7rem" class="money"><%= monthlyInvest %></strong></h4>
 </div>
+
+<div class="box">
+    <h4>Podaj swoją kwotę emerytury i wiek, w którym chcesz ją osiągnąć aby uzyskać spersonalizowane wyliczenia</h4>
+    <form action="/dashboard/emerytura/update" method="POST">
+
+        <label for="targetPension">Ile ma wynosić Twoja emerytura?</label>
+        <input type="number" id="targetPension" name="targetPension" required>
+    
+        <label for="targetAge">Ile chcesz mieć wtedy lat?</label>
+        <input type="number" id="targetAge" name="targetAge" required>
+
+        <label for="birth">Twoja data urodzin</label>
+        <input type="date" id="birth" name="birth" required>
+
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="submit" class="btn" value="Aktualizuj">
+    </form>
+</div>
+

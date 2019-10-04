@@ -72,29 +72,6 @@ class Pool{
     }
 
 
-
-    /*reusablePoolQuery(uniqueOperations, visitorId=null) {
-        return new Promise( async (resolve, reject) => {
-
-            let aggOperations = uniqueOperations.concat([
-                { $project: {
-                    type: 1,
-                    status: 1,
-                    amount: 1,
-                    created_at: 1,
-                    author_id: '$author_id',
-                    author: {$arrayElemAt: ['$authorDocument', 0]} //to 0 to pozycja w tablicy
-                } }
-            ]);
-
-            let payments = await paymentsCollection.aggregate(aggOperations).toArray();
-
-            resolve(payments);
-        });
-    }*/
-
-
-
     getPools(){
         return new Promise(async (resolve, reject) => {
 
@@ -153,6 +130,17 @@ class Pool{
             } else{
                 resolve(false);
             }
+            
+        });
+    }
+
+
+    getLastFinishedPool(){
+        return new Promise( async (resolve, reject) => {
+
+            const pools = await poolsCollection.find({ status: 'finished' }).toArray();
+
+            resolve(pools[pools.length-1]);
             
         });
     }

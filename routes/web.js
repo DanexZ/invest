@@ -35,6 +35,7 @@ router.get('/dashboard/account/:username', UserController.mustBeLoggedIn, UserCo
 router.get('/dashboard/password', UserController.mustBeLoggedIn, BackendController.user_password);
 router.get('/dashboard/documents', UserController.mustBeLoggedIn, BackendController.user_documents);
 router.get('/dashboard/emerytura', UserController.mustBeLoggedIn, BackendController.user_emerytura);
+router.post('/dashboard/emerytura/update', UserController.mustBeLoggedIn, UserController.update_emerytura);
 
 // ADMIN ROUTES
 router.get('/dashboard/admin/:optional', UserController.mustBeLoggedIn, UserController.mustBeAdmin, BackendController.admin);
@@ -48,6 +49,7 @@ router.get('/dashboard/admin/asset/:id', UserController.mustBeLoggedIn, UserCont
 // INFORMATION
 router.get('/dashboard/information', UserController.mustBeLoggedIn, BackendController.information);
 router.get('/dashboard/information/regulamin', UserController.mustBeLoggedIn, BackendController.information_regulamin);
+router.get('/dashboard/information/politics', UserController.mustBeLoggedIn, BackendController.information_politics);
 router.get('/dashboard/information/faq', UserController.mustBeLoggedIn, BackendController.information_faq);
 router.get('/dashboard/information/mission', UserController.mustBeLoggedIn, BackendController.information_mission);
 

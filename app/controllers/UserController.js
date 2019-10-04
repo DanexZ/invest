@@ -19,7 +19,10 @@ exports.login = async function(req, res){
             role: user.data.role,
             status: user.data.status,
             account: user.data.account,
-            type: user.data.type
+            type: user.data.type,
+            targetAge: user.data.targetAge,
+            targetPension: user.data.targetPension,
+            birth: user.data.birth
         }
 
         req.session.save(function(){
@@ -58,7 +61,10 @@ exports.register = function(req, res){
             role: user.data.role,
             status: user.data.status,
             account: user.data.account,
-            type: user.data.type
+            type: user.data.type,
+            targetAge: user.data.targetAge,
+            targetPension: user.data.targetPension,
+            birth: user.data.birth
         }
         req.session.save(function(e){
             res.redirect('/dashboard');
@@ -129,6 +135,34 @@ exports.edit = async (req, res) => {
             req.flash('success', "Operacja wykonana");
         } else {
             req.flash('errors', 'Coś nie tak');
+        }
+
+        req.session.save(() => res.redirect(backURL));
+
+    })
+
+    .catch((errors) => {
+        console.log(errors);
+
+        errors.forEach(error => req.flash('errors', error));
+        req.session.save(() => res.redirect(backURL));
+    });
+}
+
+
+exports.update_emerytura = (req, res) => {
+    const backURL = req.header('Referer') || '/dashboard';
+
+    const user = new User();
+
+    user.updateEmeryturaTargets(req.session.user._id, req.body)
+
+    .then((status) => {
+
+        if(status == 'success'){
+            req.flash('success', "Operacja wykonana");
+        } else {
+            user.errors.forEach(error => req.flash('errors', error));
         }
 
         req.session.save(() => res.redirect(backURL));

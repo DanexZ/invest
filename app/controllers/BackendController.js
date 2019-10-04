@@ -18,11 +18,20 @@ const functions = new Functions();
 
 exports.index = async (req, res) => {
 
+    const currentDate = new Date(moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss'));
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDate();
+
+    const transfer = new Transfer();
+    let user = new User();
+
     const userNextPayments = await functions.userNextPayments(req.session.user._id);
-
     const p_s = await functions.calculate_subkonto(req.session.user._id);
-
     const userAccountValue = await functions.calculate_userAccountValue(req.session.user._id);
+    const userTransfers = await transfer.getRecipientTransfers(req.session.user._id);
+    const transfers = await transfer.all();
+    user = await user.findUserByUsername(req.session.user.username);
 
     req.session.user.subkonto = p_s.subkonto;
 
@@ -31,13 +40,12 @@ exports.index = async (req, res) => {
     let pool = new Pool();
     let currentPool = await pool.getCurrent();
 
-    let userPart;
+    let userPartCurrentPool = 0;
     
     if(currentPool){
 
         //trzeba pobrać jej transfery i podliczyć zbiórkę
         //podliczam udorazu udział aktualnie zalogowane usera
-        let transfer = new Transfer();
         let in_transfers = await transfer.getRecipientTransfers(currentPool._id);
         let out_transfers = await transfer.getAuthorTransfers(currentPool._id);
 
@@ -56,17 +64,150 @@ exports.index = async (req, res) => {
             }
         }
 
-        userPart = user_part_in - user_part_out;
+        userPartCurrentPool = user_part_in - user_part_out;
     }
 
-    req.session.user.part = userPart || '0';
+    let futureIncome = 0;
+    if(userPartCurrentPool){
+        futureIncome = Math.floor((userPartCurrentPool/currentPool.amount)*currentPool.profit_netto*100)/100;
+    }
+
+    //Chcę wyliczyć zysk użytkownika w bieżącym miesiącu, poprzednim i w tym roku
+    let currentMonthIncome = 0;
+    let previousMonthIncome = 0;
+    let currentYearIncome = 0;
+    for(let i=0; i<userTransfers.length; i++){
+        if(userTransfers[i].author_username == 'MoneyU' && userTransfers[i].title.includes('ZYSK')){
+            const transferDate = new Date(userTransfers[i].created_at);
+            const transferYear = transferDate.getFullYear();
+            const transferMonth = transferDate.getMonth();
+
+            if(transferYear == currentYear){
+                currentYearIncome += userTransfers[i].amount;
+            }
+
+            if(transferYear == currentYear && transferMonth == currentMonth){
+                currentMonthIncome += userTransfers[i].amount;
+            }
+
+            if(currentMonth == 0){
+                if(transferYear == currentYear - 1 && transferMonth == 11){
+                    previousMonthIncome += userTransfers[i].amount;
+                }
+            } else {
+                if(transferYear == currentYear && transferMonth == currentMonth - 1){
+                    previousMonthIncome += userTransfers[i].amount;
+                }
+            }
+        }
+    }
+    /** ---------------------------------------------------------------------------------- */
+
+    /** EMERYTURA */
+
+    //muszę wyliczyć średnią rentowność
+    const asset = new Asset();
+    const assets = await asset.all();
+    const finishedPools = await pool.getFinishedPools();
+
+    let profitabilities = [];
+    for(let i=0; i<assets.length; i++){
+        for(let m=0; m<finishedPools.length; m++){
+            if(assets[i].pool_nr == finishedPools[m].nr){
+                const purchase = assets[i].purchase;
+                const rent = assets[i].rent;
+                const static_costs = assets[i].static_costs;
+                const tax = 0.19*(rent - static_costs);
+                const operator_interest = 0.07*(rent - tax - static_costs);
+                const netto = rent - tax - static_costs - operator_interest;
+                const profitability = netto/purchase;
+                profitabilities.push(profitability);
+            }
+        }  
+    }
+
+    let average = 0;
+    for(let i=0; i<profitabilities.length; i++){
+        average += profitabilities[i];
+    }
+
+    average = average/profitabilities.length;
+    /** Mam średnią rentowność wszystkich aktywów */
+    /** Zakładam wiek usera na 25 lat a przejście na emeryturę w wieku 65 z kwotą 2000 */
+    let targetAge = 65;
+    let currentAge = 25;
+    let targetPension = 2000;
+    if(user.targetPension){
+        targetAge = user.targetAge;
+        targetPension = user.targetPension;
+        //muszę wyliczyć currentAge
+        const userBirthDate = new Date(user.birth);
+        const userYear = userBirthDate.getFullYear();
+        const userMonth = userBirthDate.getMonth();
+        const userDay = userBirthDate.getDate();
+
+        currentAge = currentYear - userYear;
+        if( userMonth >= currentMonth && userDay > currentDay){
+            currentAge--;
+        }
+        req.session.user.targetPension = user.targetPension;
+    }
+    const months = (targetAge - currentAge)*12;
+    /** Muszę wyliczyć jaki jest potrzebny kapitał */
+    /** capital*average = targetPension */
+    const targetCapital = targetPension/average;
+    const missingCapital = targetCapital - userAccountValue;
+    const monthlyInvest = missingCapital/months;
+
+    //muszę wiedzieć ile user zainwestował już w bieżącym miesiącu
+    //może są zamknięte zbiórki z bieżącego miesiąca?
+    let userPartLastPools = 0;
+    let user_amount_in = 0;
+    let user_amount_out = 0;
+
+    for(let i=0; i<finishedPools.length; i++){
+        
+        for(let m=0; m<transfers.length; m++){
+            if(finishedPools[i]._id.equals(transfers[m].recipient_id) && transfers[m].author_id.equals(req.session.user._id)){
+                const transferDate = new Date(transfers[m].created_at);
+                const transferYear = transferDate.getFullYear();
+                const transferMonth = transferDate.getMonth();
+
+                if(transferYear == currentYear && transferMonth == currentMonth){   
+                    user_amount_in += transfers[m].amount;
+                } 
+            }
+
+            if(finishedPools[i]._id.equals(transfers[m].author_id && transfers[m].recipient_id.equals(req.session.user._id))){
+                const transferDate = new Date(transfers[m].created_at);
+                const transferYear = transferDate.getFullYear();
+                const transferMonth = transferDate.getMonth();
+
+                if(transferYear == currentYear && transferMonth == currentMonth){   
+                    user_amount_out += transfers[m].amount;
+                } 
+            }
+        }
+    }
+
+    userPartLastPools = user_amount_in - user_amount_out;
+    
+    const currentMonthInvested = userPartCurrentPool + userPartLastPools;
 
 
     res.render('backend/index', {
         user: req.session.user,
         userNextPayments: userNextPayments,
         payments: p_s.payments,
-        userAccountValue: userAccountValue
+        userAccountValue: userAccountValue,
+        currentMonthIncome: currentMonthIncome,
+        previousMonthIncome: previousMonthIncome,
+        currentYearIncome: currentYearIncome,
+        futureIncome,
+        targetAge: targetAge,
+        targetPension: targetPension,
+        monthlyInvest: monthlyInvest,
+        currentMonthInvested: currentMonthInvested
     });
 }
 
@@ -115,10 +256,12 @@ exports.user_documents = async (req, res) => {
 exports.user_emerytura = async (req, res) => {
 
     //muszę wyliczyć średnią rentowność
+    let user = new User();
     const asset = new Asset();
     const pool = new Pool();
     const assets = await asset.all();
     const finishedPools = await pool.getFinishedPools();
+    user = await user.findUserByUsername(req.session.user.username);
 
     let profitabilities = [];
     for(let i=0; i<assets.length; i++){
@@ -146,9 +289,28 @@ exports.user_emerytura = async (req, res) => {
     /** Teraz potrzebuję wartość konta użytkownika */
     const userAccountValue = await functions.calculate_userAccountValue(req.session.user._id);
     /** Zakładam wiek usera na 25 lat a przejście na emeryturę w wieku 65 z kwotą 2000 */
-    const targetAge = 65;
-    const currentAge = 25;
-    const targetPension = 2000;
+    let targetAge = 65;
+    let currentAge = 25;
+    let targetPension = 2000;
+    if(user.targetPension){
+        targetAge = user.targetAge;
+        targetPension = user.targetPension;
+        //muszę wyliczyć currentAge
+        const userBirthDate = new Date(user.birth);
+        const userYear = userBirthDate.getFullYear();
+        const userMonth = userBirthDate.getMonth();
+        const userDay = userBirthDate.getDate();
+        const currentDate = new Date(moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss'));
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+        const currentDay = currentDate.getDate();
+
+        currentAge = currentYear - userYear;
+        if( userMonth >= currentMonth && userDay > currentDay){
+            currentAge--;
+        }
+        req.session.user.targetPension = user.targetPension;
+    }
     const months = (targetAge - currentAge)*12;
     /** Muszę wyliczyć jaki jest potrzebny kapitał */
     /** capital*average = targetPension */
@@ -914,6 +1076,19 @@ exports.information_regulamin = async (req, res) => {
     res.render('backend/information/regulamin',{
         user: req.session.user,
         page: 'information_regulamin'
+    });
+}
+
+
+exports.information_politics = async (req, res) => {
+
+    //podliczenie subkonta pod każdym rootem
+    const p_s = await functions.calculate_subkonto(req.session.user._id);
+    req.session.user.subkonto = p_s.subkonto;
+
+    res.render('backend/information/politics',{
+        user: req.session.user,
+        page: 'information_politics'
     });
 }
 

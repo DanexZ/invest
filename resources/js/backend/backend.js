@@ -84,6 +84,6 @@ if(document.querySelector('#specyfic-asset')){
 
 new Emit();
 
-$('.pools-list-item').bind('click', function(){
+$('.main-item').bind('click', function(){
     $(this).next().slideToggle('fast');
 });

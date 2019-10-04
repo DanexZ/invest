@@ -30,10 +30,13 @@
                     <td>Wartość konta</td><td class="money"><%= userAccountValue %></td>
                 </tr>
                 <tr>
-                    <td>Zysk z poprzedniego miesiąca:</td><td class="money">0.00</td>
+                    <td>Zysk w tym miesiącu:</td><td class="money"><%= currentMonthIncome %></td>
                 </tr>
                 <tr>
-                    <td>Zysk w tym roku:</td><td class="money">0.00</td>
+                    <td>Zysk z poprzedniego miesiąca:</td><td class="money"><%= previousMonthIncome %></td>
+                </tr>
+                <tr>
+                    <td>Zysk w tym roku:</td><td class="money"><%= currentYearIncome %></td>
                 </tr>
             </tbody>
         </table>
@@ -46,6 +49,9 @@
             <tbody>
                 <tr>
                     <td>Inwestycja w zbiórce:</td><td class="money"><%= user.part %></td>
+                </tr>
+                <tr>
+                    <td>Przyszły zysk ze zbiórki:</td><td class="money"><%= futureIncome %></td>
                 </tr>
             </tbody>
         </table>
@@ -80,6 +86,28 @@
         
             
         <a href="/dashboard/my-products"><button class="btn">Moje produkty</button></a>
+    </div>
+
+    <div class="tile">
+        <h4><ion-icon name="person"></ion-icon>Emerytura</h4>
+        <hr>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Cel:</td><td class="money"><%= targetPension %></td>
+                </tr>
+                <tr>
+                    <td>W wieku:</td><td><%= targetAge %> lat</td>
+                </tr>
+                <tr>
+                    <td>Potrzebujesz zainwestować w tym miesiącu:</td><td class="money"><%= monthlyInvest %></td>
+                </tr>
+                <tr>
+                    <td class="sex">Zainwestowałeś</td><td class="money"><%= currentMonthInvested %></td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="/dashboard/emerytura"><button class="btn">Ustawienia</button></a>
     </div>
 
     <div class="tile">

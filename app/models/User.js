@@ -52,6 +52,10 @@ class User{
                 this.errors.push("Nazwa użytkownika nie może być dłuższa niż 20 znaków");
                 validUsername = false;
             }
+            if(this.data.username.toLowerCase().includes('admin') || this.data.username.toLowerCase().includes('moneyu')){
+                this.errors.push("Nazwa użytkownika zawiera zastrzeżone słowo");
+                validUsername = false;
+            }
             if(!validator.isEmail(this.data.email)){
                 this.errors.push("Wprowadź koniecznie poprawny e-mail");
                 validEmail = false;
@@ -154,6 +158,9 @@ class User{
                     this.data.account = '';
                     this.data.status = 'new';
                     this.data.type = 'person'; //typ konta domyślnie person
+                    this.data.targetPension = 0;
+                    this.data.targetAge = 0;
+                    this.data.birth = 0;
                     this.data.created_at = moment().tz('Europe/Warsaw').format('YYYY-MM-DD HH:mm:ss');
     
                     await usersCollection.insertOne(this.data);
@@ -311,6 +318,45 @@ class User{
                         pesel: body.pesel,
                         id_card: body.id_card,
                         status: body.status
+                        } 
+                    }
+                );
+                resolve('success');
+            } else {
+                resolve('failure');
+            }
+        });
+    }
+
+
+
+    updateEmeryturaTargets(user_id, data){
+        return new Promise( async (resolve, reject) => {
+
+            if(!data.targetPension){
+                this.errors.push('Musisz podać kwotę swojej docelowej emerytury');
+            }
+
+            if(!data.targetAge){
+                this.errors.push('Musisz podać swój wiek, w którym chcesz osiągnąć wskazaną przez siebie kwotę emerytury');
+            }
+            
+            if(!data.birth){
+                this.errors.push('Podaj swój aktualny wiek');
+            }
+
+            if(typeof(data.targetPension) != 'string' || typeof(data.targetAge) != 'string' || typeof(data.birth) != 'string'){
+                this.errors.push('coś nie tak');
+            }
+            
+
+            if(!this.errors.length){
+                await usersCollection.findOneAndUpdate(
+                    { _id: ObjectID(user_id) },
+                    { $set: {
+                        targetPension: parseFloat(data.targetPension),
+                        targetAge: parseInt(data.targetAge),
+                        birth: data.birth,
                         } 
                     }
                 );

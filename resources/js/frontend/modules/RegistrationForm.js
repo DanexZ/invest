@@ -87,7 +87,11 @@ class RegistrationForm{
         }
 
         if(this.nick.value.length > 20){
-            this.showValidationError(this.nick, "Nick nie może przekraczać 20 znaków")
+            this.showValidationError(this.nick, "Nick nie może przekraczać 20 znaków");
+        }
+
+        if(this.nick.value.toLowerCase().includes('admin') || this.nick.valule.toLowerCase().includes('moneyu')){
+            this.showValidationError(this.nick, "Nick zawiera zastrzeżone słowo");
         }
 
         if(!this.nick.errors){

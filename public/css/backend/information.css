@@ -1,0 +1,15 @@
+.faq-list{
+    
+}
+
+.faq-list .main-item{
+    background: rgba(148, 148, 148, 0.2);
+    border-bottom: 1px solid rgba(148, 148, 148, .5);
+    font-size: 140%;
+    cursor: pointer;
+}
+
+.faq-list .main-item,
+.faq-list .sub-menu{
+    padding: 1rem;
+}

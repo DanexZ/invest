@@ -44,7 +44,9 @@ class ActiveClass{
         } else if(this.page == 'information'){
             document.querySelector('#information_li').classList.add('active');
         } else if(this.page == 'information_regulamin'){
-            document.querySelector('#information_regulamin_li').classList.add('active');
+            document.querySelector('#regulamin_li').classList.add('active');
+        } else if(this.page == 'information_politics'){
+            document.querySelector('#politics_li').classList.add('active');
         } else if(this.page == 'information_faq'){
             document.querySelector('#information_faq_li').classList.add('active');
         } else if(this.page == 'information_mission'){
