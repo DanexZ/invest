@@ -96,7 +96,7 @@ exports.mustBeLoggedIn = function(req, res, next){
 
 
 exports.mustBeAdmin = function(req, res, next){
-    if(req.session.user.role == 'administrator'){
+    if(req.session.user.role === 'administrator'){
         next();
     } else {
         req.flash('errors', "Nie masz uprawnień");
@@ -109,8 +109,8 @@ exports.mustBeAdmin = function(req, res, next){
 
 
 exports.access = (req, res, next) => {
-    console.log('3');
-    if(req.session.user.username == req.params.username || req.session.user.role == 'administrator'){
+    
+    if(req.session.user.username === req.params.username || req.session.user.role === 'administrator'){
         next();
     } else {
         req.flash('errors', "Nie masz uprawnień");

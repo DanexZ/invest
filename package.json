@@ -5,7 +5,8 @@
     "main": "app.js",
     "scripts": {
         "watch": "start nodemon db.js -e html,js,ejs,css --ignore frontend-js --ignore public/ start && webpack --watch",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "mocha **/*.test.js",
+        "test-watch": "nodemon --exec \"npm test\""
     },
     "keywords": [],
     "author": "",
@@ -17,6 +18,7 @@
         "gulp-rev": "^9.0.0",
         "gulp-usemin": "^0.3.30",
         "gulp-watch": "^5.0.1",
+        "mocha": "^6.2.1",
         "postcss-hexrgba": "^1.0.2",
         "postcss-import": "^12.0.1",
         "postcss-nested": "^4.1.2",

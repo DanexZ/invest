@@ -94,13 +94,6 @@ class Functions{
     }
 
 
-    get_previous_billing_period(time, toSubtract){
-
-
-
-    }
-
-
     calculate_subkonto(user_id){
         return new Promise(async (resolve, reject) => {
 
