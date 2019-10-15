@@ -671,24 +671,28 @@ class Functions{
 
 
 
-    calculate_userAccountValue(user_id){
+    calculate_userAccountValue(user_id, finishedPools=null){
         return new Promise(async (resolve, reject) => {
 
             const pool = new Pool();
+
+            if(!finishedPools){
+                finishedPools = await pool.getFinishedPools();
+            }
+
             const transfer = new Transfer();
-            const pools = await pool.getFinishedPools();
             const transfers = await transfer.all();
 
             let in_transfers = 0;
             let out_transfers = 0;
 
-            for(let i=0; i<pools.length; i++){
+            for(let i=0; i<finishedPools.length; i++){
                 for(let m=0; m<transfers.length; m++){
-                    if(pools[i]._id.equals(transfers[m].recipient_id) && transfers[m].author_id.equals(user_id)){
+                    if(finishedPools[i]._id.equals(transfers[m].recipient_id) && transfers[m].author_id.equals(user_id)){
                         in_transfers += transfers[m].amount;
                     }
 
-                    if(pools[i]._id.equals(transfers[m].author_id) && transfers[m].recipient_id.equals(user_id)){
+                    if(finishedPools[i]._id.equals(transfers[m].author_id) && transfers[m].recipient_id.equals(user_id)){
                         out_transfers += transfers[m].amount;
                     }
                 }
